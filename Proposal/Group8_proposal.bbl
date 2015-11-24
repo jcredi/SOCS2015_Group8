@@ -1,0 +1,35 @@
+\begin{thebibliography}{1}
+
+\bibitem{altiparmak2006genetic}
+F.~Altiparmak, M.~Gen, L.~Lin, and T.~Paksoy.
+\newblock A genetic algorithm approach for multi-objective optimization of
+  supply chain networks.
+\newblock {\em Computers \& Industrial Engineering}, 51(1):196--215, 2006.
+
+\bibitem{amiri2006designing}
+A.~Amiri.
+\newblock Designing a distribution network in a supply chain system:
+  Formulation and efficient solution procedure.
+\newblock {\em European Journal of Operational Research}, 171(2):567--576,
+  2006.
+
+\bibitem{gen2005hybrid}
+M.~Gen and A.~Syarif.
+\newblock Hybrid genetic algorithm for multi-time period
+  production/distribution planning.
+\newblock {\em Computers \& Industrial Engineering}, 48(4):799--809, 2005.
+
+\bibitem{jayaraman2001planning}
+V.~Jayaraman and H.~Pirkul.
+\newblock Planning and coordination of production and distribution facilities
+  for multiple commodities.
+\newblock {\em European journal of operational research}, 133(2):394--408,
+  2001.
+
+\bibitem{syarif2002study}
+A.~Syarif, Y.~Yun, and M.~Gen.
+\newblock Study on multi-stage logistic chain network: a spanning tree-based
+  genetic algorithm approach.
+\newblock {\em Computers \& Industrial Engineering}, 43(1):299--314, 2002.
+
+\end{thebibliography}

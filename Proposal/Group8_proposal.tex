@@ -1,0 +1,25 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\author{Jacopo Credi, Martin Henoch, Jonas Meinel and Viktor W\"anerl\"ov}
+\title{GA and PSO methods for Supply Chain Network design optimization}
+\begin{document}
+\maketitle
+
+A supply chain can be viewed as a network with goods flowing from suppliers to customers through several intermediate stages consisting of many facilities including e.g. manufacturers, distribution centres and retailers. Traditionally, marketing, distribution, planning,
+manufacturing, and purchasing organizations along the supply chain operated independently. In the last two decades, however, operation researchers have focussed their attention on the design and performance analysis of the supply chain as a whole, developing the concept of Supply Chain Management (SCM).
+In particular, the problem of designing an optimal Supply Chain Network (SCN) is one of the most comprehensive strategic decision problems that need to be addressed for long-term efficient operation of the whole supply chain.
+This problem includes determining optimal number, location, capacity and type of plants, warehouses and distribution centres to be built, as well the amount of raw materials to consume, products to produce and items to ship among the network nodes.
+
+Several optimization methods have been applied to SCN design, notably including Genetic Algorithms~\cite{altiparmak2006genetic, syarif2002study}. In this project we intend to implement and simulate a Supply Chain Network model~\cite{amiri2006designing, jayaraman2001planning, syarif2002study} and implement a GA-optimizer inspired by the work of Altiparmak et al.~\cite{altiparmak2006genetic} and Syarif et. al~\cite{syarif2002study}. Then, we would like to implement and apply a Particle Swarm Optimization algorithm to
+the same problem and compare the performance of the two approaches. In a later phase, eventually, we would like to introduce time-dependence (e.g. inspired by the framework used by Gen et al.~\cite{gen2005hybrid}) in the customers' demand of products (e.g. two products with oscillating noisy seasonal demand) and use Linear Genetic Programming to evolve time-dependent flows of goods matching the customers' demand.
+
+\bibliography{references} 
+\bibliographystyle{abbrv}
+
+\end{document}
