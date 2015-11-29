@@ -82,13 +82,25 @@ for iGeneration = 1:nGenerations
     if mod(iGeneration,plotFrequency) == 0
         [bestSoFar, bestFitness] = UpdateBest(population, fitness, unfitness);
         UpdateFitnessPlot(bestFitnessFigure, iGeneration, bestFitness);
-        DrawNetwork(links, nCustomers, customersPositions, storesPositions, bestSoFar);
+
+
     end
+    
+    
+    
     
     waitbar(iGeneration/nGenerations,h);
 end
 close(h);
 %% end of main loop
 
+% TO-DO:
+% find best viable solution and plot it
+isViable = unfitness == 0;
+[maxFitness, iBestViable] = max(fitness(isViable));
+bestSolution = population(iBestViable,:); % WARNING: Can be not viable
+
+% the following function doesn't work
+DrawNetwork(links, nCustomers, customersPositions, storesPositions, bestSolution)
+
 fprintf('  %i generations completed in %4.3f seconds.\n',nGenerations,toc);
-fprintf('  Final best fitness: %f\n',bestFitness);
