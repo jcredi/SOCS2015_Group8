@@ -6,7 +6,7 @@
 
 %% GA parameters
 populationSize = 50;
-nGenerations = 50000;
+nGenerations = 500000;
 crossoverProbability = 0.8;
 mutationProbability = 1/nCustomers;
 tournamentProbability = 0.8;
@@ -46,7 +46,11 @@ for iGeneration = 1:nGenerations
     parent2 = population(iParent2,:);
     
     % Crossover
-    offspring = Crossover(parent1, parent2);
+    if rand < crossoverProbability
+        offspring = Crossover(parent1, parent2);
+    else
+        offspring = [parent1;parent2];
+    end
     
     for iOffspring = 1:2
         
