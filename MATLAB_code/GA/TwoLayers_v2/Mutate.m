@@ -5,7 +5,7 @@ mutatedChromosome = chromosome;
 
 for iCustomer = 1:nCustomers
     if rand() < mutationProbability
-        
+        % if mutation occurs
         if rand() < 0.5
             % then random mutation
             newStore = randi(nStores+1);
@@ -14,13 +14,13 @@ for iCustomer = 1:nCustomers
             end
             mutatedChromosome(iCustomer) = newStore;
         else
-            swap mutation
+            % swap mutation
             swapWith = randi(nCustomers);
             tmp = chromosome(iCustomer);
             chromosome(iCustomer) = chromosome(swapWith);
             chromosome(swapWith) = tmp;
         end
-            
+    end
             
             
         % or swap mutations
@@ -28,7 +28,6 @@ for iCustomer = 1:nCustomers
         % operators!!!
         
 
-    end
 end
 
 end

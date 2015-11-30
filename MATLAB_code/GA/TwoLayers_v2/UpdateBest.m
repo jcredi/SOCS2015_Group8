@@ -8,8 +8,8 @@ if isempty(viableSolutions)
     bestSoFar = population(iBestOfTheWorst,:);
 else
     bestUnfitness = 0;
-    fitness = fitness(unfitness==0,:);
-    [~,iBestOfTheBest] = max(fitness);
+    fitness(unfitness~=0,:) = NaN;
+    [~,iBestOfTheBest] = nanmax(fitness);
     bestFitness = fitness(iBestOfTheBest);
     bestSoFar = population(iBestOfTheBest,:);
 end
