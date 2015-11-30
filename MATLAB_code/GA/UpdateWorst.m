@@ -1,10 +1,10 @@
 function iWorstSolution = UpdateWorst(fitness, unfitness)
 
-[~, iMinFitness] = min(fitness);
 [maximumUnfitness, iMaxUnfitness] = max(unfitness);
 if maximumUnfitness > 0
     iWorstSolution = iMaxUnfitness;
 else
+    [~, iMinFitness] = min(fitness);
     iWorstSolution = iMinFitness;
 end
 

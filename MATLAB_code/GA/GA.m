@@ -2,21 +2,22 @@
 % Run script main.m first, then this
 
 % TO-DO
-% allow for empty entries (customers who don't go shopping)
+% understand why sometimes maximum fitness decreases!!!
 
 %% GA parameters
 populationSize = 50;
-nGenerations = 10000;
+nGenerations = 50000;
 crossoverProbability = 0.8;
 mutationProbability = 1/nCustomers;
 tournamentProbability = 0.8;
 tournamentSize = 5;
-plotFrequency = 100;
+plotFrequency = 1000;
 
 %% Initialisations
 fitness = zeros(populationSize,1);
 unfitness = zeros(populationSize,1);
-population = randi(nStores, populationSize, nCustomers);
+population = randi(nStores+1, populationSize, nCustomers);
+population(population==nStores+1) = NaN;
 
 %% Evaluate initial fitness and unfitness
 for iChromosome = 1:populationSize
@@ -25,13 +26,12 @@ for iChromosome = 1:populationSize
         nCustomers, capacities, demands);
 end
 iWorstSolution = UpdateWorst(fitness, unfitness);
-[bestSoFar, bestFitness] = UpdateBest(population, fitness, unfitness);
+[bestSoFar, bestFitness, bestUnfitness] = UpdateBest(population, fitness, unfitness);
 
 % Fitness plot
 bestFitnessFigure = InitialiseFitnessPlot(bestFitness);
 % World plot
 links = InitialiseWorldPlot(worldSize, customersPositions, storesPositions);
-
 
 
 %% Main GA loop
@@ -62,27 +62,26 @@ for iGeneration = 1:nGenerations
     
         % Check whether or not offspring is already in the population
         % (we don't want copies!)
-        isItReallyNew = ~any(ismember(population, newChromosome,'rows'));
+        isItReallyNew = CheckForNew(newChromosome, population, populationSize);
         if isItReallyNew
-            
-            % Evaluate fitness and unfitness of offspring
-            newFitness = EvaluateFitness(newChromosome, nCustomers, payoffs);
-            newUnfitness = EvaluateUnfitness(newChromosome, nCustomers, capacities, demands);
-           
             % Replacement
-            population(iWorstSolution,:) = newChromosome;
-            fitness(iWorstSolution,:) = newFitness;
-            unfitness(iWorstSolution,:) = newUnfitness;
             iWorstSolution = UpdateWorst(fitness, unfitness);
-
+            population(iWorstSolution,:) = newChromosome;
+            fitness(iWorstSolution,:) = EvaluateFitness(newChromosome, nCustomers, payoffs);
+            unfitness(iWorstSolution,:) = EvaluateUnfitness(newChromosome, nCustomers, capacities, demands);  
         end
     end
        
-    % Update best so far and update plots
+    % Update best
+    
+                
+    
     if mod(iGeneration,plotFrequency) == 0
-        [bestSoFar, bestFitness] = UpdateBest(population, fitness, unfitness);
-        UpdateFitnessPlot(bestFitnessFigure, iGeneration, bestFitness);
-        DrawNetwork(links, nCustomers, customersPositions, storesPositions, bestSoFar);
+        [bestSoFar, bestFitness, bestUnfitness] = UpdateBest(population, fitness, unfitness);
+        if bestUnfitness == 0
+            UpdateFitnessPlot(bestFitnessFigure, iGeneration, bestFitness);
+            DrawNetwork(links, nCustomers, customersPositions, storesPositions, bestSoFar);
+        end
     end
     
     waitbar(iGeneration/nGenerations,h);

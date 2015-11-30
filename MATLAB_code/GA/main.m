@@ -9,7 +9,7 @@ nStores = 10; % number of stores
 worldSize = 10; %size of the world
 walkingDistance = 1; %interaction radi
 demands = 1*ones(1,nCustomers);
-capacities = 20*ones(nStores,1);
+capacities = 5*ones(nStores,1);
 
 %positions in the world
 customersPositions = rand(nCustomers,2) * worldSize;
