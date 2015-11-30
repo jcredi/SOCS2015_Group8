@@ -10,9 +10,7 @@
 % a program for a 3-layer supply chain and then hopefully generalise it
 % with minimum effort.
 
-nLayers = 3;
-facilitiesPerLayer = [nRetailers, nWarehouses, nManufacturers];
-nGenes = sum(facilitiesPerLayer);
+
 
 %% GA parameters
 populationSize = 50;
@@ -28,15 +26,17 @@ fitness = zeros(populationSize,1);
 unfitness = zeros(populationSize,1);
 population = InitialisePopulation(populationSize, nLayers, facilitiesPerLayer); % this works!
 
-% TO-DO: fix everything from this point on
+
 
 
 %% Evaluate initial fitness and unfitness
-for iChromosome = 1:populationSize
-    fitness(iChromosome) = EvaluateFitness(population(iChromosome,:), nCustomers, payoffs);
-    unfitness(iChromosome) = EvaluateUnfitness(population(iChromosome,:), ...
-        nCustomers, capacities, demands);
-end
+for iIndividual = 1:populationSize
+    genome = population{iIndividual};
+    warehousesDemands = EvaluateWarehousesDemands(genome, nWarehouses, retailersDemands);
+    fitness(iIndividual) = EvaluateFitness(genome, retailersDemands, warehousesDemands, distances, alpha);
+    unfitness(iIndividual) = EvaluateUnfitness(genome, warehousesDemands, ...
+        warehousesMaxCapacity, manufacturersSupply);
+end   
 iWorstSolution = UpdateWorst(fitness, unfitness);
 [bestSoFar, bestFitness, bestUnfitness] = UpdateBest(population, fitness, unfitness);
 
@@ -45,6 +45,7 @@ bestFitnessFigure = InitialiseFitnessPlot(bestFitness);
 % World plot
 links = InitialiseWorldPlot(worldSize, customersPositions, storesPositions);
 
+% TO-DO: fix everything from this point on
 
 %% Main GA loop
 disp('Running GA...'); tic;

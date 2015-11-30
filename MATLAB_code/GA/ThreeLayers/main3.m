@@ -5,13 +5,14 @@
 clear; close all; clc;
 
 nRetailers = 100; %number of customers
-nWarehouses = 20; % number of stores
-nManufacturers = 5;
+nWarehouses = 10; % number of stores
+nManufacturers = 2;
 worldSize = 10; %size of the world
 maxDistance = 3; %interaction radi
 
 retailersDemands = ones(1,nRetailers);
-manufacturersOutputs = (nManufacturers/nRetailers)*ones(nManufacturers,1);
+warehousesMaxCapacity = (nRetailers/nWarehouses)*ones(nWarehouses,1);
+manufacturersSupply = (nRetailers/nManufacturers)*ones(nManufacturers,1);
 
 %positions in the world
 retailersPositions = rand(nRetailers,2) * worldSize;
@@ -23,3 +24,10 @@ distWarehousesRetailers = pdist2(warehousesPositions, retailersPositions);
 distManufacturersWarehouses = pdist2(manufacturersPositions,warehousesPositions);
 transportFitnessWR = 1./distWarehousesRetailers;
 transportFitnessMW = 1./distManufacturersWarehouses;
+
+% for the GA
+alpha = 0.01;
+nLayers = 3;
+facilitiesPerLayer = [nRetailers, nWarehouses, nManufacturers];
+nGenes = sum(facilitiesPerLayer);
+distances = {distWarehousesRetailers; distManufacturersWarehouses};
