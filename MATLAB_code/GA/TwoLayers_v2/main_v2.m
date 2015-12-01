@@ -15,7 +15,6 @@ capacities = 10*ones(nStores,1);
 customersPositions = rand(nCustomers,2) * worldSize;
 storesPositions = rand(nStores,2) * worldSize;
 
-
 % compute distances and payoff matrix
 distances = pdist2(storesPositions,customersPositions);
 payoffs = walkingDistance./distances;

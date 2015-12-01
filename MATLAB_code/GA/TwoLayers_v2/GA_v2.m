@@ -1,7 +1,7 @@
-%% GA A GA solver for the generalised assignment problem
+%% GA_v2 A GA solver for the generalised assignment problem
 % Run script main.m first, then this
 
-alpha = 0.01;
+alpha = 0.3;
 
 %% GA parameters
 populationSize = 50;

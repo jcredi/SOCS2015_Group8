@@ -11,6 +11,9 @@
 % with minimum effort.
 
 
+alpha = 0.2;
+
+
 
 %% GA parameters
 populationSize = 50;

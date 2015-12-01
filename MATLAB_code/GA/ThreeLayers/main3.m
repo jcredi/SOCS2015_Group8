@@ -26,7 +26,6 @@ transportFitnessWR = 1./distWarehousesRetailers;
 transportFitnessMW = 1./distManufacturersWarehouses;
 
 % for the GA
-alpha = 0.01;
 nLayers = 3;
 facilitiesPerLayer = [nRetailers, nWarehouses, nManufacturers];
 nTotGenes = sum(facilitiesPerLayer);

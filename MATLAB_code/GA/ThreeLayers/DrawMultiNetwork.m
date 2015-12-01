@@ -28,7 +28,7 @@ for iWarehouse = 1:nWarehouses
     
     warehousePos = warehousesPositions(iWarehouse,:);
     chosenManufacturer = bestSolution{2}(1,iWarehouse);
-    if isnan(chosenManufacturer)
+    if isnan(chosenManufacturer) || linesThickness(iWarehouse) == 0
         set(linksWarehousesManufacturers(iWarehouse),'XData',[NaN NaN]);
         set(linksWarehousesManufacturers(iWarehouse),'YData',[NaN NaN]);
     else
