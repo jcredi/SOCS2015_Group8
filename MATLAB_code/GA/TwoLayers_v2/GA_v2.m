@@ -5,12 +5,12 @@ alpha = 0.01;
 
 %% GA parameters
 populationSize = 50;
-nGenerations = 500000;
-crossoverProbability = 0.8;
+nGenerations = 250000;
+crossoverProbability = 0.7;
 mutationProbability = 1/nCustomers;
 tournamentProbability = 0.8;
-tournamentSize = 5;
-plotFrequency = 1000;
+tournamentSize = 2;
+plotFrequency = 2000;
 
 %% Initialisations
 fitness = zeros(populationSize,1);

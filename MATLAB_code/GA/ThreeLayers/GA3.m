@@ -14,9 +14,9 @@
 
 %% GA parameters
 populationSize = 50;
-nGenerations = 10000;
-crossoverProbability = 0.8; % this is now for each chromosome!
-mutationProbability = 1/nGenes; % see below
+nGenerations = 100000;
+crossoverProbability = 0.6; % this is now for each chromosome!
+mutationProbability = 1/nTotGenes; % see below
 tournamentProbability = 0.8;
 tournamentSize = 2;
 plotFrequency = 1000;
@@ -30,11 +30,12 @@ population = InitialisePopulation(populationSize, nLayers, facilitiesPerLayer); 
 
 
 %% Evaluate initial fitness and unfitness
-for iIndividual = 1:populationSize
-    genome = population{iIndividual};
-    warehousesDemands = EvaluateWarehousesDemands(genome, nWarehouses, retailersDemands);
-    fitness(iIndividual) = EvaluateFitness(genome, retailersDemands, warehousesDemands, distances, alpha);
-    unfitness(iIndividual) = EvaluateUnfitness(genome, warehousesDemands, ...
+for iGenome = 1:populationSize
+    genome = population{iGenome};
+    warehousesDemands = hist(genome{1}, nWarehouses); % can only use hist if all retailers demands == 1, otherwise use function below
+    % warehousesDemands = EvaluateWarehousesDemands(genome, nWarehouses, retailersDemands);
+    fitness(iGenome) = EvaluateFitness(genome, retailersDemands, warehousesDemands, distances, alpha);
+    unfitness(iGenome) = EvaluateUnfitness(genome, warehousesDemands, ...
         warehousesMaxCapacity, manufacturersSupply);
 end   
 iWorstSolution = UpdateWorst(fitness, unfitness);
@@ -43,67 +44,59 @@ iWorstSolution = UpdateWorst(fitness, unfitness);
 % Fitness plot
 bestFitnessFigure = InitialiseFitnessPlot(bestFitness);
 % World plot
-links = InitialiseWorldPlot(worldSize, customersPositions, storesPositions);
-
-% TO-DO: fix everything from this point on
+[linksRetailersWarehouses, linksWarehousesManufacturers] = InitialiseWorldPlot(...
+    worldSize, retailersPositions, warehousesPositions, manufacturersPositions);
 
 %% Main GA loop
 disp('Running GA...'); tic;
-h = waitbar(0,'Please wait...');
 for iGeneration = 1:nGenerations
     
     % Selection
     iParent1 = TournamentSelect(fitness,tournamentProbability,tournamentSize);
-    parent1 = population(iParent1,:);
+    parent1 = population{iParent1};
     iParent2 = TournamentSelect(fitness,tournamentProbability,tournamentSize);
-    parent2 = population(iParent2,:);
+    parent2 = population{iParent2};
     
     % Crossover
-    if rand < crossoverProbability
-        offspring = Crossover(parent1, parent2);
-    else
-        offspring = [parent1;parent2];
-    end
+    offspring = Crossover(parent1, parent2, crossoverProbability);
     
     for iOffspring = 1:2
         
-        newChromosome = offspring(iOffspring,:);
+        newGenome = offspring{iOffspring};
         
         % Mutation
-        newChromosome = Mutate(newChromosome, mutationProbability, nCustomers, nStores);
-        
-    
-        % TO-DO: 
-        % write problem-specific genetic operator(s) (see paper)
-    
+        newGenome = Mutate(newGenome, mutationProbability, nRetailers, ...
+            nWarehouses, nManufacturers);
     
         % Check whether or not offspring is already in the population
         % (we don't want copies!)
-        isItReallyNew = CheckForNew(newChromosome, population, populationSize);
+        isItReallyNew = CheckForNew(newGenome, population, populationSize);
         if isItReallyNew
             % Replacement
             iWorstSolution = UpdateWorst(fitness, unfitness);
-            population(iWorstSolution,:) = newChromosome;
-            fitness(iWorstSolution,:) = EvaluateFitness(newChromosome, nCustomers, payoffs);
-            unfitness(iWorstSolution,:) = EvaluateUnfitness(newChromosome, nCustomers, capacities, demands);  
+            population{iWorstSolution} = newGenome;
+            % Update fitness and unfitness
+            newWarehousesDemands = hist(newGenome{1}, nWarehouses); % can only use hist if all retailers demands == 1, otherwise use function below
+            %newWarehousesDemands = EvaluateWarehousesDemands(newGenome, nWarehouses, retailersDemands);
+            fitness(iWorstSolution) = EvaluateFitness(newGenome, ...
+                retailersDemands, newWarehousesDemands, distances, alpha);
+            unfitness(iWorstSolution) = EvaluateUnfitness(newGenome, ...
+                newWarehousesDemands, warehousesMaxCapacity, manufacturersSupply);
         end
     end
        
-    % Update best
-    
-                
-    
+    % Update plots and best
     if mod(iGeneration,plotFrequency) == 0
         [bestSoFar, bestFitness, bestUnfitness] = UpdateBest(population, fitness, unfitness);
         if bestUnfitness == 0
             UpdateFitnessPlot(bestFitnessFigure, iGeneration, bestFitness);
-            DrawNetwork(links, nCustomers, customersPositions, storesPositions, bestSoFar);
+            DrawMultiNetwork(bestSoFar, linksRetailersWarehouses, ...
+                linksWarehousesManufacturers, retailersPositions, ...
+                warehousesPositions, manufacturersPositions, warehousesDemands);
         end
     end
     
-    waitbar(iGeneration/nGenerations,h);
 end
-close(h);
 %% end of main loop
 
 fprintf('  %i generations completed in %4.3f seconds.\n',nGenerations,toc);

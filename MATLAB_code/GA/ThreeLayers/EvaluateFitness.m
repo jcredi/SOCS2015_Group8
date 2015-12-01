@@ -10,8 +10,8 @@ function fitness = EvaluateFitness(genome, retailersDemands, warehousesDemands, 
 
 %% Flow term (only depends on end-customers)
 retailersChromosome = genome{1};
-isCustomerSatisfied = ~isnan(retailersChromosome);
-flow = sum(retailersDemands(isCustomerSatisfied));
+isRetailerSatisfied = ~isnan(retailersChromosome);
+flow = sum(retailersDemands(isRetailerSatisfied));
 % (each end-customer either satisfies all its demand or buys nothing)
 
 
@@ -19,23 +19,22 @@ flow = sum(retailersDemands(isCustomerSatisfied));
 totalDistance = 0; % total distance travelled by shipped items
 
 % layer 2 to layer 1
-distances2to1 = distances{1};
-[nWarehouses, nCustomers] = size(distances2to1);
-for iCustomer = 1:nCustomers
-    if isCustomerSatisfied(iCustomer)
-        distanceFromWarehouse = retailersDemands(iCustomer).*distances2to1(retailersChromosome(iCustomer), iCustomer);
+[nWarehouses, nRetailers] = size(distances{1});
+for iRetailers = 1:nRetailers
+    if isRetailerSatisfied(iRetailers)
+        distanceFromWarehouse = retailersDemands(iRetailers).*distances{1}(retailersChromosome(iRetailers), iRetailers);
         totalDistance = totalDistance + distanceFromWarehouse;
     end
 end    
 
+
 % layer 3 to layer 2
 warehousesChromosome = genome{2};
-distance3to2 = distances{2};
 isWarehouseRestocked = ~isnan(warehousesChromosome);
 for iWarehouse = 1:nWarehouses % now warehouses are clients
     if isWarehouseRestocked(iWarehouse)
         distanceFromManufacturer = warehousesDemands(iWarehouse).*...
-            distance3to2(warehousesChromosome(iWarehouse), iWarehouse);
+            distances{2}(warehousesChromosome(iWarehouse), iWarehouse);
         % note: we are deliberately allowing uncovered orders here (will be
         % taken into account by unfitness measure, as in the 2-layer GA)
         % ....but CHECK if this works!!

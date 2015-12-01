@@ -16,9 +16,9 @@ for iCustomer = 1:nCustomers
         else
             % swap mutation
             swapWith = randi(nCustomers);
-            tmp = chromosome(iCustomer);
-            chromosome(iCustomer) = chromosome(swapWith);
-            chromosome(swapWith) = tmp;
+            tmp = mutatedChromosome(iCustomer);
+            mutatedChromosome(iCustomer) = mutatedChromosome(swapWith);
+            mutatedChromosome(swapWith) = tmp;
         end
     end
             

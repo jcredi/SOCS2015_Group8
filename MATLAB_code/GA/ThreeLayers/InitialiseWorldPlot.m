@@ -34,13 +34,14 @@ text(manufacturersPositions(:,1), manufacturersPositions(:,2), manufacturersLabe
 box on;
 
 % Initialise links
+parulaColors = get(groot,'DefaultAxesColorOrder');
 linksRetailersWarehouses = [];
 for i = 1:nRetailers
-   linksRetailersWarehouses(i) = line([0 0], [0 0]);
+   linksRetailersWarehouses(i) = line([0 0], [0 0],'LineWidth',0.33);
 end
 linksWarehousesManufacturers = [];
 for i = 1:nWarehouses
-   linksWarehousesManufacturers(i) = line([0 0], [0 0]);
+   linksWarehousesManufacturers(i) = line([0 0], [0 0], 'Color',parulaColors(2,:));
 end
 
 end

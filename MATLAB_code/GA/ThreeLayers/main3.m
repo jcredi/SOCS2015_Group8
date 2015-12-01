@@ -2,7 +2,7 @@
 
 % Run this script first, then GA.m
 
-clear; close all; clc;
+clear; close all force; clc;
 
 nRetailers = 100; %number of customers
 nWarehouses = 10; % number of stores
@@ -29,5 +29,5 @@ transportFitnessMW = 1./distManufacturersWarehouses;
 alpha = 0.01;
 nLayers = 3;
 facilitiesPerLayer = [nRetailers, nWarehouses, nManufacturers];
-nGenes = sum(facilitiesPerLayer);
+nTotGenes = sum(facilitiesPerLayer);
 distances = {distWarehousesRetailers; distManufacturersWarehouses};
