@@ -93,10 +93,10 @@ for iGeneration = 1:nGenerations
         [bestSoFar, bestFitness, bestUnfitness] = UpdateBest(population, fitness, unfitness);
         if bestUnfitness == 0
             UpdateFitnessPlot(bestFitnessFigure, iGeneration, bestFitness);
-            warehousesDemands = hist(bestSoFar{1}, nWarehouses);
+            %warehousesDemands = hist(bestSoFar{1}, nWarehouses);
             DrawMultiNetwork(bestSoFar, linksRetailersWarehouses, ...
                 linksWarehousesManufacturers, retailersPositions, ...
-                warehousesPositions, manufacturersPositions, warehousesDemands);
+                warehousesPositions, manufacturersPositions, newWarehousesDemands);
         end
     end
     
