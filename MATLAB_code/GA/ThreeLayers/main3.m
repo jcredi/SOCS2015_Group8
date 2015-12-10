@@ -4,15 +4,15 @@
 
 clear; close all force; clc;
 
-nRetailers = 100; %number of customers
+nRetailers = 50; %number of customers
 nWarehouses = 10; % number of stores
-nManufacturers = 2;
-worldSize = 10; %size of the world
-maxDistance = 3; %interaction radi
+nManufacturers = 5;
+worldSize = 1; %size of the world
+maxDistance = 3; %interaction radius (UNUSED)
 
 retailersDemands = ones(1,nRetailers);
-warehousesMaxCapacity = (nRetailers/nWarehouses)*ones(nWarehouses,1);
-manufacturersSupply = (nRetailers/nManufacturers)*ones(nManufacturers,1);
+warehousesMaxCapacity = Inf;%(nRetailers/nWarehouses)*ones(nWarehouses,1);
+manufacturersSupply = 10*ones(nManufacturers,1);
 
 %positions in the world
 retailersPositions = rand(nRetailers,2) * worldSize;
