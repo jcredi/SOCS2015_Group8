@@ -1,23 +1,23 @@
 function suppliedItems = ShipItems(ordersArray, supply)
-%% ShipItems 
-% Output: suppliedItems, COLUMN vector
+%% ShipItems
+% Output: suppliedItems, ROW vector
 
-% transform supply into a row vector, if necessary
-if size(supply,1) < size(supply,2)
+% transform supply into a column vector, if necessary
+if size(supply,2) < size(supply,1)
 	supply = supply';
 end
 
-suppliedItems = zeros(size(ordersArray,1),1);
+suppliedItems = zeros(1,size(ordersArray,2));
 
 for supplier=1:length(supply)
     inStock = supply(supplier);
-    customersList = find(ordersArray(:,supplier));
+    customersList = find(ordersArray(supplier,:));
     
     while inStock > 0 && ~isempty(customersList)% as long as there are items in stock
         iCustomer = randi(numel(customersList)); % pick a random entry of the customers list
         customer = customersList(iCustomer);
         
-        order = ordersArray(customer,supplier);
+        order = ordersArray(supplier, customer);
         
         if order < inStock % if this customers can be satisfied
             suppliedItems(customer) = order; % give him what he ordered
