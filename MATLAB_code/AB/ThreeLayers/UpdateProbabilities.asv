@@ -22,7 +22,7 @@ for iCustomer = 1:nCustomers
         updatedProbabilities(selectedSupplier, iCustomer) = ...
                 updatedProbabilities(selectedSupplier, iCustomer)-probabilityGain;
     end
-    
+    updatedProbabil
 end
-updatedProbabilities(updatedProbabilities < 0) = 0;
+
 end

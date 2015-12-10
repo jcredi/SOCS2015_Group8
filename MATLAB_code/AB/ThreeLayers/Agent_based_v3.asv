@@ -2,7 +2,7 @@
 
 kappa = 0.01;
 width = 0.2;
-runs = 1e4;
+runs = 1e0;
 probabilitiesRW = exp(-distances{1}.^2 / width^2);
 probabilitiesWM = exp(-distances{2}.^2 / width^2);
 probabilitiesRW = probabilitiesRW./repmat(sum(probabilitiesRW,1),nWarehouses,1);
@@ -27,22 +27,22 @@ for k = 0:runs
         requestedGoodsWM, distances{2}, alpha, probabilityGain);
     probabilitiesRW = UpdateProbabilities(probabilitiesRW, shipmentsWR, ...
         requestedGoodsRW, distances{1}, alpha, probabilityGain);
-    if mod(k,100) == 0
+    if mod(k,1) == 0
         
         tradeVolumeMatrixWM = requestedGoodsWM.*repmat(shipmentsMW,nManufacturers,1);
         [indexWarehousesRows,indexWarehousesCols] = find(tradeVolumeMatrixWM);
-        indexWarehouses = NaN(1,nWarehouses);
-        %for i = indexWarehousesCols
-         %   indexWarehouses(i) = indexWarehousesRows;
-        %end
-        indexWarehouses(indexWarehousesCols) = indexWarehousesRows;
+        indexWarehouses = zeros(1,nWarehouses);
+        for i = indexWarehousesCols
+            indexWarehouses(i) = indexWarehousesRows;
+        end
+        %indexWarehouses(indexWarehousesCols) = indexWarehousesRows;
         tradeVolumeMatrixRW = requestedGoodsRW.*repmat(shipmentsWR,nWarehouses,1);
         [indexRetailersRows,indexRetailersCols] = find(tradeVolumeMatrixRW);
-        indexRetailers = NaN(1,nRetailers);
-        %for i = indexRetailersCols
-         %   indexRetailers(i) = indexRetailersRows;
-        %end
-        indexRetailers(indexRetailersCols) = indexRetailersRows;
+        indexRetailers = NAN(1,nRetailers);
+        for i = indexRetailersCols
+            indexRetailers(i) = indexRetailersRows;
+        end
+        %indexRetailers(indexRetailersCols) = indexRetailersRows;
         
         bestSolution={indexRetailers,indexWarehouses};
         DrawMultiNetwork(bestSolution, linksRetailersWarehouses, ...
