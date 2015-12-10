@@ -1,0 +1,13 @@
+!synclient HorizTwoFingerScroll=0
+
+kappa = 0.01;
+width = 1.5;
+
+
+probabilitiesCW = zeros(nRetailers, nWarehouses);
+probabilitiesWS = zeros(nWarehouses, nManufacturers);
+
+probabilitiesCW = exp(-distWarehousesRetailers.^2 / width^2);
+probabilitiesWS = exp(-distWarehousesRetailers.^2 / width^2);
+
+disp(probabilitiesCW);
