@@ -1,0 +1,32 @@
+%% InvestigateAlpha
+% Little scipt to investigate the impact of alpha on the overall customer
+% satisfaction
+
+nMaps = 5;
+alphaValues = logspace(0.5, 0, 7);
+
+finalFitness = zeros(nMaps, numel(alphaValues));
+finalCustSatisfaction = zeros(nMaps, numel(alphaValues));
+
+for iMap = 1:nMaps
+    
+    % Generate a new map
+    [facilitiesPerLayer, positions, distances] = GenerateWorld(...
+        worldSize, nRetailers, nWarehouses, nManufacturers);
+    fprintf('Evaluating map %i of %i\n',iMap,nMaps);
+    
+    for iAlpha = 1:numel(alphaValues)
+        alpha = alphaValues(iAlpha);
+        fprintf('    Evaluating alpha value %i of %i\n',iAlpha,numel(alphaValues));
+        
+        [bestSoFar, bestFitness] = GA3(alpha, worldSize, facilitiesPerLayer, ...
+            positions, distances, retailersDemands, manufacturersSupply);
+        customerSatisfaction = EvaluateCustomerSatisfaction(bestSoFar);
+        
+        finalFitness(iMap, iAlpha) = bestFitness;
+        finalCustSatisfaction(iMap, iAlpha) = customerSatisfaction;
+        
+    end
+    
+    
+end

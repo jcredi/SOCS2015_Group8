@@ -1,7 +1,7 @@
 function DrawMultiNetwork(bestSolution, linksRetailersWarehouses, ...
     linksWarehousesManufacturers, retailersPositions, warehousesPositions, ...
     manufacturersPositions, warehousesDemands)
-
+%% DrawMultiNetwork 
 
 % connections retailers <-> warehouses
 nRetailers = size(bestSolution{1},2);
@@ -28,7 +28,7 @@ for iWarehouse = 1:nWarehouses
     
     warehousePos = warehousesPositions(iWarehouse,:);
     chosenManufacturer = bestSolution{2}(1,iWarehouse);
-    if isnan(chosenManufacturer) || linesThickness(iWarehouse) == 0
+    if isnan(chosenManufacturer) || linesThickness(iWarehouse) == 0 || isnan(linesThickness(iWarehouse))
         set(linksWarehousesManufacturers(iWarehouse),'XData',[NaN NaN]);
         set(linksWarehousesManufacturers(iWarehouse),'YData',[NaN NaN]);
     else

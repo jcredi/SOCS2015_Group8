@@ -11,14 +11,22 @@
 % with minimum effort.
 
 
-alpha = 0.02;
+function [bestSoFar, bestFitness] = GA3(alpha, worldSize, retailersPositions, ...
+    warehousesPositions, manufacturersPositions,  facilitiesPerLayer, ...
+    distances, retailersDemands, manufacturersSupply )
 
 
+
+nRetailers = facilitiesPerLayer(1);
+nWarehouses = facilitiesPerLayer(2);
+nManufacturers = facilitiesPerLayer(3);
+nLayers = numel(facilitiesPerLayer);
 
 %% GA parameters
 populationSize = 50;
 nGenerations = 100000;
-crossoverProbability = 0.6; % this is now for each chromosome!
+crossoverProbability = 0.75; % this is now for each chromosome!
+nTotGenes = sum(facilitiesPerLayer);
 mutationProbability = 1/nTotGenes; % see below
 tournamentProbability = 0.8;
 tournamentSize = 2;
@@ -38,8 +46,7 @@ for iGenome = 1:populationSize
     warehousesDemands = hist(genome{1}, nWarehouses); % can only use hist if all retailers demands == 1, otherwise use function below
     % warehousesDemands = EvaluateWarehousesDemands(genome, nWarehouses, retailersDemands);
     fitness(iGenome) = EvaluateFitness(genome, retailersDemands, warehousesDemands, distances, alpha);
-    unfitness(iGenome) = EvaluateUnfitness(genome, warehousesDemands, ...
-        warehousesMaxCapacity, manufacturersSupply);
+    unfitness(iGenome) = EvaluateUnfitness(genome, warehousesDemands, manufacturersSupply);
 end   
 iWorstSolution = UpdateWorst(fitness, unfitness);
 [bestSoFar, bestFitness, bestUnfitness] = UpdateBest(population, fitness, unfitness);
@@ -84,7 +91,7 @@ for iGeneration = 1:nGenerations
             fitness(iWorstSolution) = EvaluateFitness(newGenome, ...
                 retailersDemands, newWarehousesDemands, distances, alpha);
             unfitness(iWorstSolution) = EvaluateUnfitness(newGenome, ...
-                newWarehousesDemands, warehousesMaxCapacity, manufacturersSupply);
+                newWarehousesDemands, manufacturersSupply);
         end
     end
        
@@ -93,10 +100,10 @@ for iGeneration = 1:nGenerations
         [bestSoFar, bestFitness, bestUnfitness] = UpdateBest(population, fitness, unfitness);
         if bestUnfitness == 0
             UpdateFitnessPlot(bestFitnessFigure, iGeneration, bestFitness);
-            %warehousesDemands = hist(bestSoFar{1}, nWarehouses);
+            warehousesDemands = hist(bestSoFar{1}, nWarehouses);
             DrawMultiNetwork(bestSoFar, linksRetailersWarehouses, ...
                 linksWarehousesManufacturers, retailersPositions, ...
-                warehousesPositions, manufacturersPositions, newWarehousesDemands);
+                warehousesPositions, manufacturersPositions, warehousesDemands);
         end
     end
     
@@ -105,3 +112,5 @@ end
 
 fprintf('  %i generations completed in %4.3f seconds.\n',nGenerations,toc);
 fprintf('  Final best fitness: %f\n',bestFitness);
+
+end

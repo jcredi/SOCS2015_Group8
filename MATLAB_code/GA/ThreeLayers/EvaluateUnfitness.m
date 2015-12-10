@@ -1,5 +1,4 @@
-function unfitness = EvaluateUnfitness(genome, warehousesDemands, ...
-    warehousesMaxCapacity, manufacturersSupply)
+function unfitness = EvaluateUnfitness(genome, warehousesDemands, manufacturersSupply)
 % EvaluateUnfitness
 
 requestsToManufacturers = zeros(size(manufacturersSupply));
@@ -17,17 +16,17 @@ end
 % penalty 1: asking to manufacturers more than their supply
 violatedManufacturersSupply = max(0, requestsToManufacturers - manufacturersSupply);
 
-% penalty 2: exceeding warehouses capacity
-if ~iscolumn(warehousesDemands)
-    warehousesDemands = warehousesDemands';
-end
-violatedWarehouseCapacity = max(0, warehousesDemands - warehousesMaxCapacity);
+% penalty 2: exceeding warehouses capacity (REMOVED)
+% if ~iscolumn(warehousesDemands)
+%     warehousesDemands = warehousesDemands';
+% end
+% violatedWarehouseCapacity = max(0, warehousesDemands - warehousesMaxCapacity);
 
 % penalty 3: shipping uncovered items from warehouses
 unsuppliedWarehouses = isnan(ordersChromosome);
 unsuppliedItemsShipped = warehousesDemands(unsuppliedWarehouses);
 
-unfitness = sum(violatedManufacturersSupply) + ...
-            sum(violatedWarehouseCapacity) + ...
-            sum(unsuppliedItemsShipped);
+unfitness = sum(violatedManufacturersSupply) + sum(unsuppliedItemsShipped);
+%             sum(violatedWarehouseCapacity) + ...
+            
 end

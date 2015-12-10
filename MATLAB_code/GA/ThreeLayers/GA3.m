@@ -11,14 +11,25 @@
 % with minimum effort.
 
 
-alpha = 0.02;
+function [bestSoFar, bestFitness] = GA3(alpha, worldSize, facilitiesPerLayer, ...
+    positions, distances, retailersDemands, manufacturersSupply )
 
+close all;
 
+%% Unpack input data
+nLayers = numel(facilitiesPerLayer);
+nTotGenes = sum(facilitiesPerLayer);
+nRetailers = facilitiesPerLayer(1);
+nWarehouses = facilitiesPerLayer(2);
+nManufacturers = facilitiesPerLayer(3);
+retailersPositions = positions{1};
+warehousesPositions = positions{2};
+manufacturersPositions = positions{3};
 
 %% GA parameters
 populationSize = 50;
-nGenerations = 100000;
-crossoverProbability = 0.6; % this is now for each chromosome!
+nGenerations = 50000;
+crossoverProbability = 0.75; % this is now for each chromosome!
 mutationProbability = 1/nTotGenes; % see below
 tournamentProbability = 0.8;
 tournamentSize = 2;
@@ -38,8 +49,7 @@ for iGenome = 1:populationSize
     warehousesDemands = hist(genome{1}, nWarehouses); % can only use hist if all retailers demands == 1, otherwise use function below
     % warehousesDemands = EvaluateWarehousesDemands(genome, nWarehouses, retailersDemands);
     fitness(iGenome) = EvaluateFitness(genome, retailersDemands, warehousesDemands, distances, alpha);
-    unfitness(iGenome) = EvaluateUnfitness(genome, warehousesDemands, ...
-        warehousesMaxCapacity, manufacturersSupply);
+    unfitness(iGenome) = EvaluateUnfitness(genome, warehousesDemands, manufacturersSupply);
 end   
 iWorstSolution = UpdateWorst(fitness, unfitness);
 [bestSoFar, bestFitness, bestUnfitness] = UpdateBest(population, fitness, unfitness);
@@ -84,7 +94,7 @@ for iGeneration = 1:nGenerations
             fitness(iWorstSolution) = EvaluateFitness(newGenome, ...
                 retailersDemands, newWarehousesDemands, distances, alpha);
             unfitness(iWorstSolution) = EvaluateUnfitness(newGenome, ...
-                newWarehousesDemands, warehousesMaxCapacity, manufacturersSupply);
+                newWarehousesDemands, manufacturersSupply);
         end
     end
        
@@ -105,3 +115,5 @@ end
 
 fprintf('  %i generations completed in %4.3f seconds.\n',nGenerations,toc);
 fprintf('  Final best fitness: %f\n',bestFitness);
+
+end
