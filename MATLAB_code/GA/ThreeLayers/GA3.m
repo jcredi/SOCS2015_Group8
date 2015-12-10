@@ -56,10 +56,10 @@ iWorstSolution = UpdateWorst(fitness, unfitness);
 
 %% PLOTS
 % Fitness plot
-%   bestFitnessFigure = InitialiseFitnessPlot(bestFitness);
-% %World plot
-% [linksRetailersWarehouses, linksWarehousesManufacturers] = InitialiseWorldPlot(...
-%     worldSize, retailersPositions, warehousesPositions, manufacturersPositions);
+  bestFitnessFigure = InitialiseFitnessPlot(bestFitness);
+%World plot
+[linksRetailersWarehouses, linksWarehousesManufacturers] = InitialiseWorldPlot(...
+    worldSize, retailersPositions, warehousesPositions, manufacturersPositions);
 
 %% Main GA loop
 disp('Running GA...'); tic;
@@ -102,13 +102,13 @@ for iGeneration = 1:nGenerations
     % Update plots and best
     if mod(iGeneration,plotFrequency) == 0
         [bestSoFar, bestFitness, bestUnfitness] = UpdateBest(population, fitness, unfitness);
-%         if bestUnfitness == 0
-%             UpdateFitnessPlot(bestFitnessFigure, iGeneration, bestFitness);
-%             warehousesDemands = hist(bestSoFar{1}, nWarehouses);
-%             DrawMultiNetwork(bestSoFar, linksRetailersWarehouses, ...
-%                 linksWarehousesManufacturers, retailersPositions, ...
-%                 warehousesPositions, manufacturersPositions, warehousesDemands);
-%         end
+        if bestUnfitness == 0
+            UpdateFitnessPlot(bestFitnessFigure, iGeneration, bestFitness);
+            warehousesDemands = hist(bestSoFar{1}, nWarehouses);
+            DrawMultiNetwork(bestSoFar, linksRetailersWarehouses, ...
+                linksWarehousesManufacturers, retailersPositions, ...
+                warehousesPositions, manufacturersPositions, warehousesDemands);
+        end
     end
     
 end
