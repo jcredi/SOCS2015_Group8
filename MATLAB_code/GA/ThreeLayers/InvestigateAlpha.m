@@ -2,8 +2,8 @@
 % Little scipt to investigate the impact of alpha on the overall customer
 % satisfaction
 
-nMaps = 3;
-alphaValues = logspace(-3, 1, 11);
+nMaps = 5;
+alphaValues = logspace(-0.5, 1.7, 7);
 nAlpha = numel(alphaValues);
 
 finalFitness = zeros(nMaps, nAlpha);

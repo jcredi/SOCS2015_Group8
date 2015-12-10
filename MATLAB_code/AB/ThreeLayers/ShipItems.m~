@@ -1,0 +1,31 @@
+function suppliedItems = ShipItems(ordersArray, supply)
+%% ShipItems 
+% Output: suppliedItems, COLUMN vector
+
+% transform supply into a row vector, if necessary
+if size(supply,1) < size(supply,2)
+	supply = supply';
+end
+
+suppliedItems = zeros(size(ordersArray,1),1);
+
+for iSupplier=1:length(supply)
+    inStock = supply(iSupplier);
+    customersList = find(ordersArray(:,iSupplier));
+
+    while inStock > 0 % as long as there are items in stock
+        iCustomer = datasample(customersList,1); % pick a random customer
+        order = ordersArray(iCustomer,iSupplier);
+        
+        if order < inStock % if this customers can be satisfied
+            suppliedItems(iCustomer) = order; % give him what he ordered
+            inStock = inStock - order; % and decrease the stock
+            customersList(iCustomer) = []; % and remove customer from the list (consider it satisfied)
+        else % there are fewer items in stock than ordered by this customer
+            suppliedItems(iCustomer) = inStock; % give hime what is left in stock
+            inStock = 0;
+        end
+    end
+end
+
+end
