@@ -1,14 +1,15 @@
 !synclient HorizTwoFingerScroll=0
 
-kappa = 0.01;
 width = 2;
-runs = 1e4;
-probabilitiesRW = exp(-distances{1}.^2 / width^2);
-probabilitiesWM = exp(-distances{2}.^2 / width^2);
-probabilitiesRW = probabilitiesRW./repmat(sum(probabilitiesRW,1),nWarehouses,1);
-probabilitiesWM = probabilitiesWM./repmat(sum(probabilitiesWM,1),nManufacturers,1);
-requestedGoodsRW = zeros(size(probabilitiesRW));
-requestedGoodsWM = zeros(size(probabilitiesWM));
+runs = 1e6;
+probabilityGain = 0.01;
+%probabilityDecay = 1e-5;
+
+probabilitiesRW = ones(size(distances{1}));
+probabilitiesWM = ones(size(distances{2}));
+requestedGoodsRW = zeros(size(distances{1}));
+requestedGoodsWM = zeros(size(distances{2}));
+
 shipmentsMW = zeros(nWarehouses,1);
 shipmentsWR = zeros(nRetailers,1);
 demandsWM = zeros(size(probabilitiesWM,2));
@@ -16,18 +17,24 @@ demandsWM = zeros(size(probabilitiesWM,2));
 [linksRetailersWarehouses, linksWarehousesManufacturers] =...
     InitialiseWorldPlot(worldSize, positions{1},...
     positions{2}, positions{3});
+fitnessFigure = InitialiseFitnessPlot(NaN);
 
 for k = 0:runs
+    
+    % Orders phase
     requestedGoodsRW = RequestGood(retailersDemands,probabilitiesRW);
     demandsWM = sum(requestedGoodsRW,2) ;
     requestedGoodsWM = RequestGood(demandsWM,probabilitiesWM);
-    shipmentsMW = ShipItems(requestedGoodsWM, manufacturersSupply);
-    shipmentsWR = ShipItems(requestedGoodsRW, shipmentsMW);
-    probabilitiesWM = UpdateProbabilities(probabilitiesWM, shipmentsMW, ...
-        requestedGoodsWM, distances{2}, alpha, probabilityGain);
-    probabilitiesRW = UpdateProbabilities(probabilitiesRW, shipmentsWR, ...
-        requestedGoodsRW, distances{1}, alpha, probabilityGain);
-    if mod(k,100) == 0
+    
+    % Shipments phase
+    shipmentsMW = ShipItems_preferential(requestedGoodsWM, manufacturersSupply, distances{2});
+    shipmentsWR = ShipItems_preferential(requestedGoodsRW, shipmentsMW, distances{1});
+    
+    % Probabilities update
+    probabilitiesWM = UpdateProbabilities_proportional(probabilitiesWM, shipmentsMW, requestedGoodsWM, distances{2}, alpha, probabilityGain);
+    probabilitiesRW = UpdateProbabilities_proportional(probabilitiesRW, shipmentsWR, requestedGoodsRW, distances{1}, alpha, probabilityGain);
+    
+    if mod(k,1000) == 0
         
         tradeVolumeMatrixWM = requestedGoodsWM.*repmat(shipmentsMW,nManufacturers,1);
         [indexWarehousesRows,indexWarehousesCols] = find(tradeVolumeMatrixWM);
@@ -44,9 +51,12 @@ for k = 0:runs
         %end
         indexRetailers(indexRetailersCols) = indexRetailersRows;
         
-        bestSolution={indexRetailers,indexWarehouses};
-        DrawMultiNetwork(bestSolution, linksRetailersWarehouses, ...
+        currentSolution={indexRetailers,indexWarehouses};
+        DrawMultiNetwork(currentSolution, linksRetailersWarehouses, ...
             linksWarehousesManufacturers, positions{1}, positions{2}, ...
             positions{3}, shipmentsMW);
+        
+        fitness = EvaluateFitness(currentSolution, retailersDemands, shipmentsMW, distances, alpha);
+        UpdateFitnessPlot(fitnessFigure, k, fitness);
     end
 end

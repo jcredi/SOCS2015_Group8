@@ -4,12 +4,12 @@
 
 clear; close all force; clc;
 
-nRetailers = 50; %number of customers
-nWarehouses = 10; % number of stores
-nManufacturers = 5;
+nRetailers = 5; %number of customers
+nWarehouses = 2; % number of stores
+nManufacturers = 2;
 worldSize = 1; %size of the world
 maxDistance = 3; %interaction radius (UNUSED)
-alpha = 5;
+alpha = 0.5;
 probabilityGain = 0.01;
 
 retailersDemands = ones(1,nRetailers);

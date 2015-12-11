@@ -2,7 +2,7 @@ function updatedProbabilities = UpdateProbabilities_proportional(probabilities, 
     requestsMatrix, distances, alpha, scalingFactor)
 
 nCustomers = size(probabilities,2);
-updatedProbabilities = probabiities;
+updatedProbabilities = probabilities;
 
 
 for iCustomer = 1:nCustomers
@@ -12,7 +12,7 @@ for iCustomer = 1:nCustomers
         profit = shipments(iCustomer) - alpha*shipmentDistance;
         
         updatedProbabilities(selectedSupplier, iCustomer) = ...
-                updatedProbabilities(selectedSupplier, iCustomer)+scalingFactor*profit;
+                max(0, updatedProbabilities(selectedSupplier, iCustomer)+scalingFactor*profit);
     end
 end
 

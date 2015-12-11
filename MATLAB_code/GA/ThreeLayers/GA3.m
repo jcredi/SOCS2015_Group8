@@ -14,7 +14,7 @@
 function [bestSoFar, bestFitness] = GA3(alpha, worldSize, facilitiesPerLayer, ...
     positions, distances, retailersDemands, manufacturersSupply )
 
-close all;
+%close all;
 
 %% Unpack input data
 nLayers = numel(facilitiesPerLayer);
