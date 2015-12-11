@@ -9,8 +9,12 @@ nWarehouses = 2; % number of stores
 nManufacturers = 2;
 worldSize = 1; %size of the world
 maxDistance = 3; %interaction radius (UNUSED)
+<<<<<<< HEAD
 alpha = 0.5;
 probabilityGain = 0.01;
+=======
+alpha = 5;
+>>>>>>> c5610a0cb7002f52d3177861ae61e4be436cfbeb
 
 retailersDemands = ones(1,nRetailers);
 warehousesMaxCapacity = Inf;%(nRetailers/nWarehouses)*ones(nWarehouses,1);
