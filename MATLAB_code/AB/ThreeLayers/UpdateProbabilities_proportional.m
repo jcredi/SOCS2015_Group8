@@ -2,7 +2,7 @@ function updatedProbabilities = UpdateProbabilities_proportional(probabilities, 
     requestsMatrix, distances, alpha, scalingFactor)
 
 nCustomers = size(probabilities,2);
-updatedProbabilities = probabiities;
+updatedProbabilities = probabilities;
 
 
 for iCustomer = 1:nCustomers
