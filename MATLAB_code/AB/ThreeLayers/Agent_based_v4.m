@@ -1,9 +1,9 @@
 !synclient HorizTwoFingerScroll=0
 
 width = 2;
-runs = 1e6;
-probabilityGain = 0.01;
-%probabilityDecay = 1e-5;
+runs = 5e5;
+probabilityReinforcement = 0.01;
+probabilityDecay = 0.01; % percent
 
 probabilitiesRW = ones(size(distances{1}));
 probabilitiesWM = ones(size(distances{2}));
@@ -22,17 +22,17 @@ fitnessFigure = InitialiseFitnessPlot(NaN);
 for k = 0:runs
     
     % Orders phase
-    requestedGoodsRW = RequestGood(retailersDemands,probabilitiesRW);
+    requestedGoodsRW = PlaceOrders(retailersDemands,probabilitiesRW, visibility{1});
     demandsWM = sum(requestedGoodsRW,2) ;
-    requestedGoodsWM = RequestGood(demandsWM,probabilitiesWM);
+    requestedGoodsWM = PlaceOrders(demandsWM,probabilitiesWM, visibility{2});
     
     % Shipments phase
-    shipmentsMW = ShipItems_preferential(requestedGoodsWM, manufacturersSupply, distances{2});
-    shipmentsWR = ShipItems_preferential(requestedGoodsRW, shipmentsMW, distances{1});
+    shipmentsMW = ShipItems_preferential(requestedGoodsWM, manufacturersSupply, distances{2}, alpha);
+    shipmentsWR = ShipItems_preferential(requestedGoodsRW, shipmentsMW, distances{1}, alpha);
     
     % Probabilities update
-    probabilitiesWM = UpdateProbabilities_proportional(probabilitiesWM, shipmentsMW, requestedGoodsWM, distances{2}, alpha, probabilityGain);
-    probabilitiesRW = UpdateProbabilities_proportional(probabilitiesRW, shipmentsWR, requestedGoodsRW, distances{1}, alpha, probabilityGain);
+    probabilitiesWM = UpdateProbabilities_new(probabilitiesWM, shipmentsMW, requestedGoodsWM, probabilityReinforcement, probabilityDecay);
+    probabilitiesRW = UpdateProbabilities_new(probabilitiesRW, shipmentsWR, requestedGoodsRW, probabilityReinforcement, probabilityDecay);
     
     if mod(k,1000) == 0
         

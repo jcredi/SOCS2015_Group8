@@ -1,4 +1,4 @@
-function shippedItems = ShipItems_preferential(ordersArray, supply, distances, alpha)
+function shippedItems = ShipItems_preferential(ordersArray, supply, distances)
 %% ShipItems_preferential
 % In case of SHORTAGE, preferably ship to nearest customers (= more profitable, or more loyal)
 
@@ -34,7 +34,9 @@ for iSupplier=1:length(supply)
             profit = order - alpha*order*distances(iSupplier, iCustomer); % compute profit for shipping to him
             if profit < 0 % if this customer is unprofitable
                 orderedIndices(1) = []; % don't ship to him and remove him from the list
-            elseif order < inStock % if there is enough in stock
+            end
+            else
+            if order < inStock % if there is enough in stock
                 shippedItems(iCustomer) = order; % give him what he ordered
                 inStock = inStock - order; % decrease the stock
                 orderedIndices(1) = []; % and remove the customer from the list

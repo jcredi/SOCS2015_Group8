@@ -1,5 +1,5 @@
 function ordersArray = RequestGood(customersDemand, probabilities)
-% InitialiseProbabilities 
+% RequestGood
 ordersArray = zeros(size(probabilities));
 iterations = length(customersDemand);
 randOrder = randperm(iterations);
@@ -11,4 +11,6 @@ for k = 1:iterations
     indexS = find(spins(k) < spinningWheel(:,randOrder(k)),1);
     ordersArray(indexS, randOrder(k)) = customersDemand(randOrder(k));
 end
+
+
 end

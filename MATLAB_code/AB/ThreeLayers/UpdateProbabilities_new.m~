@@ -1,0 +1,29 @@
+function updatedProbabilities = UpdateProbabilities_new(probabilities, shipments, ...
+    requestsMatrix, distances, alpha, probabilityReinforcement, probabilityDecay)
+% UpdateProbabilities_new 
+% Easier update:
+% - no items delivered -> do nothing (allow exploration)
+% - items delivered with negative profit -> set probability to zero
+% - items delivered with positive profit -> increase by pGain
+% Decrease all probability by pDecay
+
+nCustomers = size(probabilities,2);
+updatedProbabilities = (1-probabilityDecay).*probabilities;
+
+for iCustomer = 1:nCustomers
+    
+    if shipments(iCustomer) ~= 0 % if this customer got some items
+        selectedSupplier = find(requestsMatrix(:,iCustomer));
+        shipmentDistance = distances(selectedSupplier, iCustomer);
+        profit = shipments(iCustomer) - alpha*shipmentDistance;
+        
+        if profit > 0 % if positive profit, reinforcement
+            updatedProbabilities(selectedSupplier, iCustomer) = ...
+                updatedProbabilities(selectedSupplier, iCustomer) + probabilityReinforcement;
+        else % negative profit, stop ordering there
+            updatedProbabilities(selectedSupplier, iCustomer) = 0;
+        end
+    end
+end
+%updatedProbabilities(updatedProbabilities < 0) = 0;
+end
