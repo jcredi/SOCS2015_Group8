@@ -36,7 +36,7 @@ for k = 0:runs
     
     % Fidelity update
     fidelityWM = UpdateFidelity(fidelityWM, shipmentsMW, ordersWM, fidelityReinforcement, fidelityDecay);
-    fidelityRW = UpdateFidelity(fidelityRW, shipmentsWR, ordersRW, fidelityReinforcement, fidelityDecay);
+    fidelityRW = UpdateProbabilities_new(fidelityRW, shipmentsWR, ordersRW, fidelityReinforcement, fidelityDecay);
     
     if mod(k,1000) == 0
         
