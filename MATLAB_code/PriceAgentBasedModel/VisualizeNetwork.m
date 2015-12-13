@@ -15,8 +15,14 @@ lines = {'b','r'};
 for iLayer = 1:3
     X = layer(iLayer).locations(:,1);
     Y = layer(iLayer).locations(:,2);
-    
+    priceText = cell(1,size(X,1));
+    for i = 1:length(priceText)
+        priceText{i} = sprintf('%.2f',layer(iLayer).priceHistory(end,i));
+    end
+        
+        
     plot(X,Y,markers{iLayer},'MarkerSize',15)
+    text(X,Y,priceText)
     xlabel('x coordinate')
     ylabel('y coordinate')
 end

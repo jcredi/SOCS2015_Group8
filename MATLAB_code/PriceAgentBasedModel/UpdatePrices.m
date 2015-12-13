@@ -2,7 +2,7 @@ function layer = UpdatePrices(layer,parameterSettings)
 
 nbrOfLayers = length(layer);
 
-nbrOfPricesToUpdate = 10;
+nbrOfPricesToUpdate = 1;
 
 for iPrice = 1:nbrOfPricesToUpdate
 
@@ -18,16 +18,16 @@ iLayer = randi(nbrOfLayers - 1) + 1;
     demandHistory = currentLayer.demandHistory;
     
     % Choose node to update:
-    i = randi(length(price));
+    iNode = randi(length(price));
     
-    nodeSupplyHistory = supplyHistory(:,i);
-    nodeDemandHistory = demandHistory(:,i);
-    nodePriceHistory = currentLayer.priceHistory(:,i);
+    nodeSupplyHistory = supplyHistory(:,iNode);
+    nodeDemandHistory = demandHistory(:,iNode);
+    nodePriceHistory = currentLayer.priceHistory(:,iNode);
     
     nodeNewPrice = UpdatePrice(nodePriceHistory,nodeSupplyHistory,nodeDemandHistory,parameterSettings);
     
     currentPrices = currentLayer.priceHistory(end,:);
-    currentPrices(i) = nodeNewPrice;
+    currentPrices(iNode) = nodeNewPrice;
     
     currentLayer.priceHistory = [currentLayer.priceHistory(2:end,:); currentPrices];
     

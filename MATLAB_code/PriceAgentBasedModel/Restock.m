@@ -33,6 +33,7 @@ for i = 1:nbrOfCustomers
         % TODO manipulate probabilities
         tradeProbabilities(i,j) = max(0,customerValues(i) - storePrices(j) ...
             - transportationCost * distances(i,j));
+        
     end
 end
 
@@ -71,6 +72,7 @@ while true
 end
 
 customerLayer.supplyHistory = [customerLayer.supplyHistory(2:end,:); customerSupply];
+% customerLayer.supplyHistory = zeros(size(customerLayer.supplyHistory));
 customerLayer.stock = customerStock;
 
 % customerLayer.influx = influx;

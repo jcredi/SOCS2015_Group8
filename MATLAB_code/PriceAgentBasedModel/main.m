@@ -1,5 +1,89 @@
 
 
+%% Set variables of the problem
+
+clear
+clc
+
+nbrOfCustomers = 100;
+nbrOfWarehouses = 10;
+nbrOfSuppliers = 2;
+
+assert(mod(nbrOfCustomers,nbrOfSuppliers) == 0);
+
+problemParameters.nbrOfCustomers = nbrOfCustomers;
+problemParameters.nbrOfWarehouses = nbrOfWarehouses;
+problemParameters.nbrOfSuppliers = nbrOfSuppliers;
+
+problemParameters.customerDemands = ones(1,problemParameters.nbrOfCustomers);
+problemParameters.customerValues = ones(1,problemParameters.nbrOfCustomers);
+problemParameters.suppliersSupply = ones(1,nbrOfSuppliers)*nbrOfCustomers/nbrOfSuppliers;
+
+
+%% Initialize network
+[layer,parameterSettings] = InitializeNetwork(problemParameters);
+
+%% Set custom locations if desired...
+customRetailerLocations = ginput(problemParameters.nbrOfCustomers);
+customWarehouseLocations = ginput(problemParameters.nbrOfWarehouses);
+customSupplierLocations = ginput(problemParameters.nbrOfSuppliers);
+
+layer(1).locations = customRetailerLocations;
+layer(2).locations = customWarehouseLocations;
+layer(3).locations = customSupplierLocations;
+
+%%
+VisualizeNetwork(layer)
+
+%% Main algorithm
+startGreed = 0.1;
+endGreed = 0.1;
+
+parameterSettings.allowedPriceChange = 0.05;
+parameterSettings.k = 0.05;
+
+startAllowedPriceChange = 0.5;
+endAllowedPriceChange = 0.01;
+
+startK = 1;
+endK = 0.01;
+
+
+nbrOfIterations = 10000;
+
+fitness = zeros(1,nbrOfIterations);
+
+for i = 1:nbrOfIterations
+    
+    x = i/nbrOfIterations;
+    parameterSettings.greed = (1-x)*startGreed + x*endGreed;
+    parameterSettings.allowedPriceChange = ...
+        (1-x)*startAllowedPriceChange + x*endAllowedPriceChange;
+    parameterSettings.k = (1-x)*startK + x*endK;
+    
+    if (mod(i,100) == 0)
+        VisualizeNetwork(layer)
+        pause(0.001)
+        i
+    end
+    layer = Trade(layer,parameterSettings);
+    layer = UpdatePrices(layer,parameterSettings);
+    
+    fitness(i) = CalculateFitness(layer,parameterSettings.transportationCost);
+    
+end
+%%
+VisualizeNetwork(layer)
+
+%%
+clf
+plot(fitness)
+
+
+
+
+%%
+
 clc
 clf
 clear
@@ -11,10 +95,9 @@ parameterSettings.allowedRelativePriceChange = 0.05;
 parameterSettings.transportationCost = 0.4;
 
 startGreed = 0;
-endGreed = 0.5;
+endGreed = 0;
 
-
-nbrOfTimesteps = 20000;
+nbrOfTimesteps = 2000;
 
 influx = zeros(1,nbrOfTimesteps);
 prices = zeros(nbrOfTimesteps,3);
@@ -96,12 +179,61 @@ if mod(i,20) == 0
     VisualizeNetwork(layer)
     pause(0.001)
 end
+
+% 
+%  if i == 120
+%      input('')
+%  end
+%  
+%  
+%  if i == 240
+%      input('')
+%  end
     
     
 
 end
 
 'FINISHED'
+
+%%
+prices = linspace(0,1,50);
+
+parameterSettings.greed = 0.7;
+
+nbrOfPrices = length(prices);
+nbrOfTimesteps = 5;
+
+supplyData = zeros(nbrOfTimesteps,nbrOfPrices);
+demandData = zeros(nbrOfTimesteps,nbrOfPrices);
+
+iLayer = 2;
+iNode = 1;
+
+for iPrice = 1:nbrOfPrices
+    for iTime = 1:nbrOfTimesteps
+        
+        layer(iLayer).priceHistory(end,iNode) = prices(iPrice);
+        
+        layer = Trade(layer,parameterSettings);
+        
+        supplyData(iTime,iPrice) = layer(iLayer).supplyHistory(end,iNode);
+        demandData(iTime,iPrice) = layer(iLayer).demandHistory(end,iNode);
+    end
+    iPrice
+end
+
+%%
+clf
+
+hold on
+plotData(prices,supplyData)
+
+plotData(prices,demandData)
+
+
+% ylim([0,20])
+
 
 %%
 
@@ -111,6 +243,42 @@ hold on
 plot(nodePrice*10,'.-')
 plot(nodeSupply,'.-')
 plot(nodeDemand,'.-')
+
+%%
+
+nodes(1).demand = 3;
+nodes(1).supply = 9;
+nodes(1).price = 10;
+nodes(1).location = [0.2,1];
+
+nodes(2).demand = 1;
+nodes(2).supply = 2;
+nodes(2).price = 3.12;
+nodes(2).location = [1,1.2];
+
+nodes(3).demand = 8;
+nodes(3).supply = 7;
+nodes(3).price = 2.1;
+nodes(3).location = [2,0.5];
+
+for iNode = 1:length(nodes)
+    nodes(iNode).text = sprintf('supply: %d\ndemand: %d\nprice %.f', ...
+        nodes(iNode).supply,nodes(iNode).demand,nodes(iNode).price);
+end
+
+
+
+clf
+hold on
+for iNode = 1:length(nodes)
+    plot(nodes(iNode).location(1),nodes(iNode).location(2),'*')
+    text(nodes(iNode).location(1),nodes(iNode).location(2),nodes(iNode).text)
+end
+
+xlim([0,3])
+ylim([0,2])
+
+
 
 %%
 clf
@@ -145,250 +313,24 @@ plot(fitness)
 ylim([-10,100])
 
 
-%%
+clf
 subplot(1,1,1)
 plot(fitness)
-
-
-%%
-
-
-VisualizeNetwork(layer)
-
-
-%% Plot flux:
-
-layer.influx
-
-% Plot locations
-layer(1).locations
-
-clf
-hold on
-
-markers = {'b.','r.','g.'};
-lines = {'b','r'};
-
-for iLayer = 1:3
-    X = layer(iLayer).locations(:,1);
-    Y = layer(iLayer).locations(:,2);
-    
-    plot(X,Y,markers{iLayer},'MarkerSize',15)
-    xlabel('x coordinate')
-    ylabel('y coordinate')
-end
-
-for iLayer = 1:length(layer) - 1
-    customerLocations = layer(iLayer).locations;
-    storeLocations = layer(iLayer + 1).locations;
-    
-    influx = layer(iLayer).influx;
-    
-    lines = size(influx);
-    lines = influx * (1/(sum(sum(influx))))* 30;
-    lineColors = {'b','r'}
-    
-    [nbrOfCustomers,nbrOfStores] = size(influx);
-    
-    for i = 1:nbrOfCustomers
-        for j = 1:nbrOfStores
-            if influx(i,j) > 0
-            plot([customerLocations(i,1),storeLocations(j,1)],...
-                [customerLocations(i,2),storeLocations(j,2)],lineColors{iLayer})
-            end
-%             plot([customerLocations(i,1),storeLocations(j,1)],...
-%                 [customerLocations(i,2),storeLocations(j,2)],lineColors{iLayer},...
-%             'LineWidth',lines(i,j) + 0.01)
-        end
-    end
-    
-end
-
-
-%%
-
-clc
-clear
-
-% rng(1000)
-
-nbrOfCustomers = 2;
-nbrOfSuppliers = 2;
-
-nbrOfStoredTimesteps = 5;
-nbrOfTimesteps = 20;
-
-layerSizes = [nbrOfCustomers,2,nbrOfSuppliers];
-
-% These three vectors are constant parameters throughout the algorithm.
-% customerDemands = randi(100,nbrOfCustomers,1);
-customerDemands = ones(1,nbrOfCustomers)*100;
-% customerDemands = [2,3];
-
-
-customerValues = ones(nbrOfCustomers,1)*20;
-suppliersSupply = ones(nbrOfSuppliers,1)*100;
-% suppliersSupply = [5,1];
-
-
-% Initialize layer struct-array
-layer(length(layerSizes)).name = '';
-
-% Set parameters:
-parameterSettings.k = 0.5;
-parameterSettings.allowedRelativePriceChange = 0.1;
-parameterSettings.transportationCost = 0.9;
-
-
-nbrOfNodes = layerSizes(1);
-layer(1).name = 'Customer layer';
-layer(1).supplyHistory = zeros(nbrOfTimesteps,nbrOfNodes);
-
-layer(1).demandHistory = zeros(nbrOfTimesteps,nbrOfNodes);
-layer(1).priceHistory = NaN(nbrOfTimesteps,nbrOfNodes);
-
-for i = 1:nbrOfTimesteps
-    layer(1).demandHistory(i,:) = customerDemands;
-    layer(1).priceHistory(i,:) = customerValues;
-end
-
-layer(1).locations = rand(nbrOfCustomers,2);
-
-layer(1).stock = zeros(nbrOfNodes,1);
-layer(1).backOrders = customerDemands;
-
-layer(1).influx = zeros(layerSizes(1),layerSizes(2));
-
-for i = 2 : length(layerSizes) - 1
-    
-    nbrOfNodes = layerSizes(i);
-    
-    layer(i).name = sprintf('Layer nr. %d',i);
-    layer(i).supplyHistory = zeros(nbrOfTimesteps,nbrOfNodes);
-    layer(i).demandHistory = zeros(nbrOfTimesteps,nbrOfNodes);
-    layer(i).priceHistory = ones(nbrOfTimesteps,nbrOfNodes) * 0.5;
-    
-    layer(i).stock = zeros(nbrOfNodes,1);
-    layer(i).backOrders = zeros(nbrOfNodes,1);
-    
-    layer(i).locations = rand(nbrOfNodes,2);
-    layer(i).influx = zeros(layerSizes(i),layerSizes(i+1));
-end
-
-
-nbrOfNodes = layerSizes(end);
-layer(end).name = 'Supplier layer';
-layer(end).supplyHistory = zeros(nbrOfTimesteps,nbrOfNodes);
-
-for i = 1:size(layer(end).supplyHistory,1)
-    layer(end).supplyHistory(i,:) = suppliersSupply;
-end
-
-layer(end).demandHistory = zeros(nbrOfTimesteps,nbrOfNodes);
-layer(end).priceHistory = ones(nbrOfTimesteps,nbrOfNodes);
-
-layer(end).stock = suppliersSupply;
-layer(end).backOrders = zeros(nbrOfNodes,1);
-
-layer(end).locations = rand(nbrOfNodes,2);
-
-
-
-
-%%
-
-nbrOfIterations = 1000;
-
-totalVolume = zeros(nbrOfIterations,length(layer));
-totalPrice = zeros(nbrOfIterations,length(layer));
-totalDemand = zeros(nbrOfIterations,length(layer));
-totalSupply = zeros(nbrOfIterations,length(layer));
-fitnessValues = zeros(nbrOfIterations,1);
-
-% Main algorithm
-for iteration = 1:nbrOfIterations
-%     disp(sprintf('Current iteration: %d',iteration))
-    if (mod(iteration,100) == 0)
-        iteration
-    end
-    
-    layer = Trade(layer)
-    
-    
-%     for i = 1:length(layer)-1
-%         [layer(i),layer(i+1)] = Trade(layer(i),layer(i+1),parameterSettings);
-%         layer(i+1) = UpdatePrices(layer(i+1),parameterSettings);
-%         
-%     end
-    
-    for iLayer = 1:length(layer)
-        totalVolume(iteration,iLayer) = sum(sum(layer(iLayer).influx));
-        totalPrice(iteration,iLayer) = sum(layer(iLayer).priceHistory(end,:));
-        totalDemand(iteration,iLayer) = sum(layer(iLayer).demandHistory(end,:));
-        totalSupply(iteration,iLayer) = sum(layer(iLayer).supplyHistory(end,:));
-    end
-    fitnessValues(iteration) = CalculateFitness(layer);
-end
-
-%%
-clf
-plot(fitnessValues)
 xlabel('time')
 ylabel('fitness')
 
 %%
 
-subplot(1,2,1)
-plot(totalVolume(:,1))
-
-subplot(1,2,2)
-plot(totalVolume(:,2))
-
-%%
-
-A = totalPrice
-% A = totalDemand
-% A = totalSupply
-
-
-subplot(1,3,1)
-plot(A(:,1))
-
-subplot(1,3,2)
-plot(A(:,2))
-
-
-subplot(1,3,3)
-plot(A(:,3))
-
-
-
-%%
-
-
-
-A = 4;
-
-
-
-if A > 0
-    while A > 0
-        A = A - 1
-    end
-else
-    'a'
-end
-
-
-%%
 
 
 
 
-A = [1,2;3,4];
 
-[maxA,ind] = max(A(:));
-[m,n] = ind2sub(size(A),ind)
+
+
+
+
+
 
 
 

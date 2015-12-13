@@ -33,18 +33,19 @@ transportationCost = parameterSettings.transportationCost;
 % TODO
 % greed = 1;
 
-tradeProbabilities = GenerateTradeProbabilities(customerValues,storePrices,transportationCost,distances,greed);
+% tradeProbabilities = GenerateTradeProbabilities(customerValues,storePrices,transportationCost,distances,greed);
 % 
 % 
-% tradeProbabilities = zeros(nbrOfCustomers,nbrOfStores);
-% 
-% for i = 1:nbrOfCustomers
-%     for j = 1:nbrOfStores
-%         tradeProbabilities(i,j) = max(0,customerValues(i) - storePrices(j) ...
-%             - transportationCost * distances(i,j));
-%         % TODO manipulate trade probabilities;
-%     end
-% end
+tradeProbabilities = zeros(nbrOfCustomers,nbrOfStores);
+
+for i = 1:nbrOfCustomers
+    for j = 1:nbrOfStores
+        tradeProbabilities(i,j) = max(0,customerValues(i) - storePrices(j) ...
+            - transportationCost * distances(i,j));
+        
+        % TODO manipulate trade probabilities;
+    end
+end
 
 
 while true

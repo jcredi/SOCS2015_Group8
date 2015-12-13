@@ -35,7 +35,7 @@ for iLayer = 1:length(layer) -1
 end
 
 
-fitness = totalVolume - alpha * totalDistanceTravelled;
+fitness = totalVolume * 20 - alpha * totalDistanceTravelled;
 
 end
 
