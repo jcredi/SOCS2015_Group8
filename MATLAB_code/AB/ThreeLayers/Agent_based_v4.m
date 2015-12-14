@@ -3,8 +3,8 @@
 % ====================================== %
 % Parameters
 runs = 1e5;
-fidelityReinforcement = 0.01;
-fidelityDecay = 0.01; % percent
+fidelityReinforcement = 0.001;
+fidelityDecay = 0.001; % percent
 
 % ====================================== %
 % Initializations
@@ -31,8 +31,8 @@ for k = 0:runs
     ordersWM = PlaceOrders(demandsWM,fidelityWM, visibility{2});
     
     % Shipments phase (suppliers to customers)
-    shipmentsMW = ShipItems_preferential(ordersWM, manufacturersSupply, distances{2}, alpha);
-    shipmentsWR = ShipItems_preferential(ordersRW, shipmentsMW, distances{1}, alpha);
+    shipmentsMW = ShipItems_withFidelity(ordersWM, manufacturersSupply, distances{2}, alpha, fidelityWM);
+    shipmentsWR = ShipItems_withFidelity(ordersRW, shipmentsMW, distances{1}, alpha, fidelityRW);
     
     % Fidelity update
     fidelityWM = UpdateFidelity(fidelityWM, shipmentsMW, ordersWM, fidelityReinforcement, fidelityDecay);

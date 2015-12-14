@@ -10,7 +10,6 @@
 % a program for a 3-layer supply chain and then hopefully generalise it
 % with minimum effort.
 
-
 function [bestSoFar, bestFitness] = GA3(alpha, worldSize, facilitiesPerLayer, ...
     positions, distances, retailersDemands, manufacturersSupply )
 
