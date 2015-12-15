@@ -1,16 +1,16 @@
 !synclient HorizTwoFingerScroll=0
 
 kappa = 0.01;
-<<<<<<< HEAD
+%<<<<<<< HEAD
 width = 2;
 runs = 1e4;
-=======
+%=======
 width = 1.0;
 runs = 1e5;
 probabilityGain = 0.1;
 probabilityDecay = 1e-3;
 
->>>>>>> c5610a0cb7002f52d3177861ae61e4be436cfbeb
+%>>>>>>> c5610a0cb7002f52d3177861ae61e4be436cfbeb
 probabilitiesRW = exp(-distances{1}.^2 / width^2);
 probabilitiesWM = exp(-distances{2}.^2 / width^2);
 probabilitiesRW = probabilitiesRW./repmat(sum(probabilitiesRW,1),nWarehouses,1);
