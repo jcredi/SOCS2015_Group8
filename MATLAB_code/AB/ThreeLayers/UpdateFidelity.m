@@ -5,7 +5,7 @@ function updatedFidelity = UpdateFidelity(fidelity, shipments, ...
 % - increase fidelity to supplier when orders are satisfied
 
 nCustomers = size(fidelity,2);
-updatedFidelity = (1-fidelityDecay).*fidelity; % decay
+updatedFidelity = max(1e-32,(1-fidelityDecay).*fidelity); % decay
 %updatedFidelity = fidelity-fidelityDecay; % decay
 
 for iCustomer = 1:nCustomers

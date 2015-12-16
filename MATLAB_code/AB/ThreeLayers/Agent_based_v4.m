@@ -35,14 +35,15 @@ for k = 0:runs
     ordersWM = PlaceOrders(demandsWM,fidelityWM, visibility{2}, beta);
     
     % Shipments phase (suppliers to customers)
-    shipmentsMW = ShipItems_withFidelity(ordersWM, manufacturersSupply, distances{2}, alpha, fidelityWM, beta);
-    shipmentsWR = ShipItems_withFidelity(ordersRW, shipmentsMW, distances{1}, alpha, fidelityRW, beta);
+    distanceOffsetInput = zeros(nManufacturers);
+    [shipmentsMW, distanceOffsetMW] = ShipItems_withFidelity(ordersWM, manufacturersSupply, distances{2}, alpha, fidelityWM, beta, distanceOffsetInput);
+    [shipmentsWR, distanceOffsetWR] = ShipItems_withFidelity(ordersRW, shipmentsMW, distances{1}, alpha, fidelityRW, beta, distanceOffsetMW);
     
     % Fidelity update
     fidelityWM = UpdateFidelity(fidelityWM, shipmentsMW, ordersWM, fidelityReinforcement, fidelityDecay);
     fidelityRW = UpdateFidelity(fidelityRW, shipmentsWR, ordersRW, fidelityReinforcement, fidelityDecay);
     
-    if mod(k,1000) == 0
+    if mod(k,2000) == 0
         
         tradeVolumeMatrixWM = ordersWM.*repmat(shipmentsMW,nManufacturers,1);
         [indexWarehousesRows,indexWarehousesCols] = find(tradeVolumeMatrixWM);

@@ -1,4 +1,4 @@
-function [shippedItems , distanceOffsetOutput]= ShipItems_withFidelity(ordersArray, supply, distances, alpha, fidelity, beta, distanceOffsetInput)
+function shippedItems = ShipItems_withFidelity(ordersArray, supply, distances, alpha, fidelity, beta, distanceOffsetInput)
 %% ShipItems_withFidelity
 % In case of SHORTAGE, preferably ship to trusted and nearest customers
 
@@ -40,13 +40,13 @@ for iSupplier=1:length(supply)
                 tmpProbabilities(tmpIndex) = [];
             elseif order < inStock % if there is enough in stock
                 shippedItems(iCustomer) = order; % give him what he ordered
-                distanceOffsetOutput(iCustomer) = distanceOffsetInput(iSupplier) + distances(iSupplier, iCustomer);
+                distanceOffsetOutput(iCustomer) = distances(iSupplier, iCustomer);
                 inStock = inStock - order; % decrease the stock
                 customersIndices(tmpIndex) = []; % and remove him from the list
                 tmpProbabilities(tmpIndex) = [];
             else % there are fewer items in stock than ordered by this customer
                 shippedItems(iCustomer) = inStock; % give hime all that is left in stock
-                distanceOffsetOutput(iCustomer) = distanceOffsetInput(iSupplier) + distances(iSupplier, iCustomer);
+                
                 inStock = 0; % set stock as depleted
             end
             
