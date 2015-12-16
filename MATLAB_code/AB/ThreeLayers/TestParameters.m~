@@ -1,14 +1,14 @@
 % TestParameters 
 
-betaValues = 0:0.2:2;
+beta = 0:0.2:2;
 alpha = 0.3;
 nRuns = 20000;
 nRunsForAverage = 500;
 fidelityReinforcement = 0.01;%logspace(-3,-1,7);
 fidelityDecayRate = 0.01;%logspace(-3,-1,7);
 
-% fitnessMean = zeros(numel(fidelityReinforcement), numel(fidelityDecayRate));
-% fitnessStd = zeros(numel(fidelityReinforcement), numel(fidelityDecayRate));
+fitnessMean = zeros(numel(fidelityReinforcement), numel(fidelityDecayRate));
+fitnessStd = zeros(numel(fidelityReinforcement), numel(fidelityDecayRate));
 
 % for iReinf = 1:numel(fidelityReinforcement)
 %     
@@ -18,10 +18,9 @@ fidelityDecayRate = 0.01;%logspace(-3,-1,7);
 %         fprintf('  j = %i\n', iDecay); tic
 
 for iBeta = 1:numel(betaValues)
-    beta = betaValues(iBeta);
-        [fitnessMean(iBeta), fitnessStd(iBeta)] = ...
-            AgentBasedSolver(fidelityReinforcement, fidelityDecayRate, ...
+        [fitnessMean(iReinf,iDecay), fitnessStd(iReinf,iDecay)] = ...
+            AgentBasedSolver(fidelityReinforcement(iReinf), fidelityDecayRate(iDecay), ...
             beta, alpha, nRuns, nRetailers, nWarehouses, nManufacturers, retailersDemands, ...
-            manufacturersSupply, distances, visibility, nRunsForAverage, worldSize, positions);
+            manufacturersSupply, distances, visibility, nRunsForAverage);
     
 end

@@ -6,6 +6,7 @@ function updatedFidelity = UpdateFidelity(fidelity, shipments, ...
 
 nCustomers = size(fidelity,2);
 updatedFidelity = (1-fidelityDecay).*fidelity; % decay
+%updatedFidelity = fidelity-fidelityDecay; % decay
 
 for iCustomer = 1:nCustomers
     
