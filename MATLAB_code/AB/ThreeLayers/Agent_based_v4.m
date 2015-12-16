@@ -2,9 +2,13 @@
 
 % ====================================== %
 % Parameters
-runs = 1e5;
-fidelityReinforcement = 0.001;
-fidelityDecay = 0.001; % percent
+runs = 5e4;
+fidelityReinforcement = 0.01;
+fidelityDecay = 0.01; % percent
+beta = 1; % controls weight of fidelity over visibility:
+          % beta = 0 -> only visibility
+          % beta = 1 -> same importance
+          % beta = 2 -> only fidelity
 
 % ====================================== %
 % Initializations
@@ -26,13 +30,13 @@ fitnessFigure = InitialiseFitnessPlot(NaN);
 for k = 0:runs
     
     % Orders phase (customers to suppliers)
-    ordersRW = PlaceOrders(retailersDemands,fidelityRW, visibility{1});
+    ordersRW = PlaceOrders(retailersDemands,fidelityRW, visibility{1}, beta);
     demandsWM = sum(ordersRW,2) ;
-    ordersWM = PlaceOrders(demandsWM,fidelityWM, visibility{2});
+    ordersWM = PlaceOrders(demandsWM,fidelityWM, visibility{2}, beta);
     
     % Shipments phase (suppliers to customers)
-    shipmentsMW = ShipItems_withFidelity(ordersWM, manufacturersSupply, distances{2}, alpha, fidelityWM);
-    shipmentsWR = ShipItems_withFidelity(ordersRW, shipmentsMW, distances{1}, alpha, fidelityRW);
+    shipmentsMW = ShipItems_withFidelity(ordersWM, manufacturersSupply, distances{2}, alpha, fidelityWM, beta);
+    shipmentsWR = ShipItems_withFidelity(ordersRW, shipmentsMW, distances{1}, alpha, fidelityRW, beta);
     
     % Fidelity update
     fidelityWM = UpdateFidelity(fidelityWM, shipmentsMW, ordersWM, fidelityReinforcement, fidelityDecay);

@@ -1,4 +1,4 @@
-function shippedItems = ShipItems_withFidelity(ordersArray, supply, distances, alpha, fidelity)
+function shippedItems = ShipItems_withFidelity(ordersArray, supply, distances, alpha, fidelity, beta)
 %% ShipItems_withFidelity
 % In case of SHORTAGE, preferably ship to trusted and nearest customers
 
@@ -20,8 +20,7 @@ for iSupplier=1:length(supply)
         customersVisibility = 1./customersDistances;
         customersFidelity = fidelity(iSupplier,customersIndices);
 
-        tmpProbabilities = customersFidelity.*customersVisibility;
-    
+        tmpProbabilities = (customersFidelity.^beta).*(customersVisibility.^(2-beta));
         
         
         while inStock > 0 && ~isempty(tmpProbabilities)

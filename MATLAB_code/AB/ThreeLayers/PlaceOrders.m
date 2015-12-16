@@ -1,9 +1,9 @@
-function ordersArray = PlaceOrders(customersDemand, pheromone, visibility)
+function ordersArray = PlaceOrders(customersDemand, pheromone, visibility, beta)
 % PlaceOrders
 
 ordersArray = zeros(size(pheromone));
 nCustomers = length(customersDemand);
-probabilities = pheromone.*visibility;
+probabilities = (pheromone.^beta).*(visibility.^(2-beta));
 
 for iCustomer = 1:nCustomers
     tmpProbabilities = probabilities(:,iCustomer);

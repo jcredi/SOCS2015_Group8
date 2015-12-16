@@ -12,7 +12,7 @@ for iCustomer = 1:nCustomers
     if shipments(iCustomer) ~= 0 % if this customer got some items, reinforce probability
         selectedSupplier = find(ordersMatrix(:,iCustomer));
         updatedFidelity(selectedSupplier, iCustomer) = ...
-                min(1, updatedFidelity(selectedSupplier, iCustomer) + fidelityReinforcement);
+                min(1, updatedFidelity(selectedSupplier, iCustomer)+fidelityReinforcement);
     end
 end
 

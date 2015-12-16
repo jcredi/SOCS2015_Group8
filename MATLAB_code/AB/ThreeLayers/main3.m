@@ -13,7 +13,7 @@ alpha = 0.5;
 
 retailersDemands = ones(1,nRetailers);
 warehousesMaxCapacity = Inf;%(nRetailers/nWarehouses)*ones(nWarehouses,1);
-manufacturersSupply = ceil(nRetailers/nManufacturers)*ones(nManufacturers,1);
+manufacturersSupply = 1.2*ceil(nRetailers/nManufacturers)*ones(nManufacturers,1);
 
 [facilitiesPerLayer, positions, distances] = GenerateWorld(...
     worldSize, nRetailers, nWarehouses, nManufacturers);
