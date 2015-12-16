@@ -2,7 +2,8 @@
 
 % Run this script first, then GA.m
 
-clear; close all force; clc;
+%clear; 
+close all force; clc;
 
 nRetailers = 50; %number of customers
 nWarehouses = 5; % number of stores
