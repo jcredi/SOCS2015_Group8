@@ -34,7 +34,7 @@ for k = 0:runs
     fidelityRW = UpdateFidelity(fidelityRW, shipmentsWR, ordersRW, fidelityReinforcement, fidelityDecayRate);
 
     
-        if mod(k,1000) == 0
+        if mod(k,2000) == 0
         
             tradeVolumeMatrixWM = ordersWM.*repmat(shipmentsMW,nManufacturers,1);
             [indexWarehousesRows,indexWarehousesCols] = find(tradeVolumeMatrixWM);
