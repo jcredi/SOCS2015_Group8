@@ -40,7 +40,6 @@ for iWarehouse = 1:nWarehouses
     end
 end
 
-
 drawnow;
 
 end

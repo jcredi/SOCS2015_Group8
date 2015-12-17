@@ -13,8 +13,9 @@ for k = 1:nRunsForAvegage
     ordersWM = PlaceOrders(demandsWM,fidelityWM, visibility{2}, beta);
     
     % Shipments phase (suppliers to customers)
-    shipmentsMW = ShipItems_withFidelity(ordersWM, manufacturersSupply, distances{2}, alpha, fidelityWM, beta);
-    shipmentsWR = ShipItems_withFidelity(ordersRW, shipmentsMW, distances{1}, alpha, fidelityRW, beta);
+    distanceOffsetInput = zeros(nManufacturers);
+    [shipmentsMW, distanceOffsetMW] = ShipItems_withFidelity(ordersWM, manufacturersSupply, distances{2}, alpha, fidelityWM, beta, distanceOffsetInput);
+    [shipmentsWR, distanceOffsetWR] = ShipItems_withFidelity(ordersRW, shipmentsMW, distances{1}, alpha, fidelityRW, beta, distanceOffsetMW);
     
     % Do NOT update fidelity here
     
