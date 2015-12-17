@@ -1,7 +1,7 @@
-function [fitnessMean, fitnessStd] = ComputeABFitness(nRunsForAvegage, beta, alpha, ...
+function [fitnessMean, fitnessStd] = ComputeABFitness_greedy(nRunsForAvegage, beta, alpha, ...
     nRetailers, nWarehouses, nManufacturers, retailersDemands, ...
     manufacturersSupply, distances, visibility, fidelityRW, fidelityWM)
-% ComputeABFitness
+% ComputeABFitness_greedy
 
 fitness = zeros(nRunsForAvegage,1);
 
@@ -14,9 +14,9 @@ for k = 1:nRunsForAvegage
     
     % Shipments phase (suppliers to customers)
     distanceOffsetInput = zeros(nManufacturers);
-    [shipmentsMW, distanceOffsetMW] = ShipItems_withFidelity(ordersWM, manufacturersSupply, distances{2}, alpha, fidelityWM, beta, distanceOffsetInput);
-    [shipmentsWR, distanceOffsetWR] = ShipItems_withFidelity(ordersRW, shipmentsMW, distances{1}, alpha, fidelityRW, beta, distanceOffsetMW);
-    
+    [shipmentsMW, distanceOffsetMW] = ShipItems_preferential(ordersWM, manufacturersSupply, distances{2}, alpha, distanceOffsetInput);
+    [shipmentsWR, ~] = ShipItems_preferential(ordersRW, shipmentsMW, distances{1}, alpha, distanceOffsetMW);
+
     % Do NOT update fidelity here
     
     % Instead, evaluate solution!

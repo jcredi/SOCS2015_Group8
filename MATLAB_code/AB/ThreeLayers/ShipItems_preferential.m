@@ -1,8 +1,9 @@
-function shippedItems = ShipItems_preferential(ordersArray, supply, distances, alpha)
+function [shippedItems , distanceOffsetOutput] = ShipItems_preferential(ordersArray, supply, distances, alpha, distanceOffsetInput)
 %% ShipItems_preferential
 % In case of SHORTAGE, preferably ship to nearest customers (= more profitable, or more loyal)
 
 shippedItems = zeros(1,size(ordersArray,2));
+distanceOffsetOutput = zeros(1,size(ordersArray,2));
 
 % transform supply into a column vector, if necessary
 if size(supply,2) < size(supply,1)
@@ -23,15 +24,17 @@ for iSupplier=1:length(supply)
         iCustomer = orderedIndices(1); % take first customer in the list
         order = ordersArray(iSupplier, iCustomer); % look how much he has ordered
 
-        profit = order - alpha*order*distances(iSupplier, iCustomer); % compute profit for shipping to him
+        profit = order - alpha*order*(distanceOffsetInput(iSupplier)+distances(iSupplier, iCustomer)); % compute profit for shipping to him
         if profit < 0 % if this customer is unprofitable
             orderedIndices(1) = []; % don't ship to him and remove him from the list
         elseif order < inStock % if there is enough in stock
             shippedItems(iCustomer) = order; % give him what he ordered
+            distanceOffsetOutput(iCustomer) = distanceOffsetInput(iSupplier) + distances(iSupplier, iCustomer);    
             inStock = inStock - order; % decrease the stock
             orderedIndices(1) = []; % and remove the customer from the list
         else % there are fewer items in stock than ordered by this customer
             shippedItems(iCustomer) = inStock; % give hime all that is left in stock
+            distanceOffsetOutput(iCustomer) = distanceOffsetInput(iSupplier) + distances(iSupplier, iCustomer);    
             inStock = 0; % set stock as depleted
         end
     end
