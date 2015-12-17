@@ -1,0 +1,69 @@
+%% Comparison of different algorithms
+
+clear; close all force; clc;
+
+% ============================================== %
+% PARAMETERS
+
+% Common
+alpha = 0.5;
+nMaps = 5; 
+
+nRetailers = 50; 
+nWarehouses = 5; 
+nManufacturers = 3; 
+worldSize = 1; %size of the world
+
+% GA
+% ---> Parameters hard-coded in GA3.m !!! <---
+
+% Agent-based (greedy and with fidelity)
+fidelityReinforcement = 0.01;
+fidelityDecayRate = 0.01;
+beta = 1;
+nRunsAB = 25000;
+nRunsForAverage = 500;
+
+% Agent-based price
+
+
+% ============================================== %
+
+addpath('../AB/ThreeLayers/');
+addpath('../GA/ThreeLayers/');
+
+retailersDemands = ones(1,nRetailers);
+warehousesMaxCapacity = Inf; % needed by the GA, but set to Inf (no constraint)
+manufacturersSupply = ceil(nRetailers/nManufacturers)*ones(nManufacturers,1);
+
+fitness_GA = zeros(1,nMaps);
+fitness_AB_greedy = zeros(1,nMaps);
+fitness_AB_fidelity = zeros(1,nMaps);
+fitness_AB_price = zeros(1,nMaps);
+
+for iMap = 1:nMaps
+    
+    % Generate a new map
+    [facilitiesPerLayer, positions, distances] = GenerateWorld(...
+        worldSize, nRetailers, nWarehouses, nManufacturers);
+    visibility = {1./distances{1}; 1./distances{2}};
+    fprintf('Solving map %i of %i', iMap, nMaps);
+    
+    % Solve with GA
+    [~, fitness_GA(iMap)] = GA3_solver(alpha, facilitiesPerLayer, ...
+        distances, retailersDemands, manufacturersSupply );
+    fprintf('Solving map %i of %i', iMap, nMaps);
+    
+    % Solve with AB greedy
+    [fitness_AB_greedy(iMap), ~] = AgentBasedSolver_greedy(fidelityReinforcement, fidelityDecayRate, ...
+        beta, alpha, nRunsAB, nRetailers, nWarehouses, nManufacturers, retailersDemands, ...
+        manufacturersSupply, distances, visibility, nRunsForAverage);
+    
+    % Solve with AB fidelity
+    [fitness_AB_fidelity(iMap), ~] = AgentBasedSolver_fidelity(fidelityReinforcement, fidelityDecayRate, ...
+        beta, alpha, nRunsAB, nRetailers, nWarehouses, nManufacturers, retailersDemands, ...
+        manufacturersSupply, distances, visibility, nRunsForAverage);
+    
+    % Solve with AB price model
+    
+end

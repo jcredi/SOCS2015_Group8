@@ -1,4 +1,4 @@
-%% GA3 A GA solver for the (3 layers) generalised assignment problem
+%% GA3_solver A GA solver for the (3 layers) generalised assignment problem
 % Run script main3.m first, then this
 
 % Here each individual in the population has 2 chromosomes (in general, N-1
@@ -10,8 +10,8 @@
 % a program for a 3-layer supply chain and then hopefully generalise it
 % with minimum effort.
 
-function [bestSoFar, bestFitness] = GA3(alpha, worldSize, facilitiesPerLayer, ...
-    positions, distances, retailersDemands, manufacturersSupply )
+function [bestSoFar, bestFitness] = GA3_solver(alpha, facilitiesPerLayer, ...
+    distances, retailersDemands, manufacturersSupply )
 
 %close all;
 
@@ -21,9 +21,9 @@ nTotGenes = sum(facilitiesPerLayer);
 nRetailers = facilitiesPerLayer(1);
 nWarehouses = facilitiesPerLayer(2);
 nManufacturers = facilitiesPerLayer(3);
-retailersPositions = positions{1};
-warehousesPositions = positions{2};
-manufacturersPositions = positions{3};
+% retailersPositions = positions{1};
+% warehousesPositions = positions{2};
+% manufacturersPositions = positions{3};
 
 %% GA parameters
 populationSize = 50;
@@ -50,18 +50,18 @@ for iGenome = 1:populationSize
     fitness(iGenome) = EvaluateFitness(genome, retailersDemands, warehousesDemands, distances, alpha);
     unfitness(iGenome) = EvaluateUnfitness(genome, warehousesDemands, manufacturersSupply);
 end   
-iWorstSolution = UpdateWorst(fitness, unfitness);
-[bestSoFar, bestFitness, bestUnfitness] = UpdateBest(population, fitness, unfitness);
+% iWorstSolution = UpdateWorst(fitness, unfitness);
+[bestSoFar, bestFitness, ~] = UpdateBest(population, fitness, unfitness);
 
-%% PLOTS
-% Fitness plot
-  bestFitnessFigure = InitialiseFitnessPlot(bestFitness);
-%World plot
-[linksRetailersWarehouses, linksWarehousesManufacturers] = InitialiseWorldPlot(...
-    worldSize, retailersPositions, warehousesPositions, manufacturersPositions);
+%% NO Plots!
+% % Fitness plot
+%   bestFitnessFigure = InitialiseFitnessPlot(bestFitness);
+% %World plot
+% [linksRetailersWarehouses, linksWarehousesManufacturers] = InitialiseWorldPlot(...
+%     worldSize, retailersPositions, warehousesPositions, manufacturersPositions);
 
 %% Main GA loop
-disp('Running GA...'); tic;
+% disp('Running GA...'); tic;
 for iGeneration = 1:nGenerations
     
     % Selection
@@ -100,20 +100,20 @@ for iGeneration = 1:nGenerations
        
     % Update plots and best
     if mod(iGeneration,plotFrequency) == 0
-        [bestSoFar, bestFitness, bestUnfitness] = UpdateBest(population, fitness, unfitness);
-        if bestUnfitness == 0
-            UpdateFitnessPlot(bestFitnessFigure, iGeneration, bestFitness);
-            warehousesDemands = hist(bestSoFar{1}, nWarehouses);
-            DrawMultiNetwork(bestSoFar, linksRetailersWarehouses, ...
-                linksWarehousesManufacturers, retailersPositions, ...
-                warehousesPositions, manufacturersPositions, warehousesDemands);
-        end
+        [bestSoFar, bestFitness, ~] = UpdateBest(population, fitness, unfitness);
+%         if bestUnfitness == 0
+%             UpdateFitnessPlot(bestFitnessFigure, iGeneration, bestFitness);
+%             warehousesDemands = hist(bestSoFar{1}, nWarehouses);
+%             DrawMultiNetwork(bestSoFar, linksRetailersWarehouses, ...
+%                 linksWarehousesManufacturers, retailersPositions, ...
+%                 warehousesPositions, manufacturersPositions, warehousesDemands);
+%         end
     end
     
 end
 %% end of main loop
 
-fprintf('  %i generations completed in %4.3f seconds.\n',nGenerations,toc);
-fprintf('  Final best fitness: %f\n',bestFitness);
+% fprintf('  %i generations completed in %4.3f seconds.\n',nGenerations,toc);
+% fprintf('  Final best fitness: %f\n',bestFitness);
 
 end
