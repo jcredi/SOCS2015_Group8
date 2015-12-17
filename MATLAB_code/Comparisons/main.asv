@@ -21,12 +21,13 @@ worldSize = 1; %size of the world
 fidelityReinforcement = 0.01;
 fidelityDecayRate = 0.01;
 beta = 1;
-nRunsAB = 25000;
+% nRunsAB = 25000;
+nRunsAB = 4000;
+
 nRunsForAverage = 500;
 
 % Agent-based price
-nPriceUpdates = 2000;
-nRunsForAveragePriceModel = 3;
+nPriceUpdates = 1000
 
 
 % ============================================== %
@@ -55,9 +56,9 @@ for iMap = 1:nMaps
     'Start AB price model'
     % Solve with AB price model
     fitness_AB_price(iMap) = PriceABSolver(alpha,nRetailers,nWarehouses,nManufacturers,retailersDemands,...
-    manufacturersSupply,positions,nPriceUpdates,nRunsForAveragePriceModel);
+    manufacturersSupply,positions,nPriceUpdates);
     'End AB price model'
-    fprintf('fitness: %f',fitness_AB_price(iMap))
+    fprintf('fitness: %f',fitness_AB_price(iMap)')
     
     
     % Solve with GA

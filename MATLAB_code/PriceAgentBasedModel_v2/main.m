@@ -8,51 +8,35 @@ clc
 % seed
 rng(0)
 
-nbrOfCustomers = 50;
+nbrOfRetailers = 50;
 nbrOfWarehouses = 10;
-nbrOfSuppliers = 5;
+nbrOfManufacturers = 5;
 
-assert(mod(nbrOfCustomers,nbrOfSuppliers) == 0);
+assert(mod(nbrOfRetailers,nbrOfManufacturers) == 0);
 
-problemParameters.nbrOfCustomers = nbrOfCustomers;
+problemParameters.nbrOfRetailers = nbrOfRetailers;
 problemParameters.nbrOfWarehouses = nbrOfWarehouses;
-problemParameters.nbrOfSuppliers = nbrOfSuppliers;
+problemParameters.nbrOfManufacturers = nbrOfManufacturers;
 
-problemParameters.customerDemands = ones(1,problemParameters.nbrOfCustomers);
-problemParameters.customerValues = ones(1,problemParameters.nbrOfCustomers);
-problemParameters.suppliersSupply = ones(1,nbrOfSuppliers)*nbrOfCustomers/nbrOfSuppliers;
+problemParameters.retailerDemand = ones(1,problemParameters.nbrOfRetailers);
+problemParameters.retailerValues = ones(1,problemParameters.nbrOfRetailers);
+problemParameters.manufacturerSupply = ones(1,nbrOfManufacturers)*nbrOfRetailers/nbrOfManufacturers;
+
+problemParameters.retailerLocations = rand(nbrOfRetailers,2);
+problemParameters.warehouseLocations = rand(nbrOfWarehouses,2);
+problemParameters.manufacturerLocations = rand(nbrOfManufacturers,2);
+
 
 
 %% Initialize network
 [layer,parameterSettings] = InitializeNetwork(problemParameters);
 parameterSettings.transportationCost = 0.5
 
-%%
-
-worldSize = 1;
-
-[ bestSolution,linksRetailersWarehouses,...
-    linksWarehousesManufacturers, retailersPositions, ...
-    warehousesPositions, ...
-    manufacturersPositions, warehousesDemands] = ConvertData( layer )
-
-% [linksRetailersWarehouses, linksWarehousesManufacturers] = ...
-%     InitialiseWorldPlot(worldSize, retailersPositions, warehousesPositions, manufacturersPositions);
-
-[linksRetailersWarehouses,linksWarehousesManufacturers] = ...
-    InitialiseWorldPlot(worldSize, retailersPositions, warehousesPositions, manufacturersPositions);
-
-
-DrawMultiNetwork(bestSolution, linksRetailersWarehouses, ...
-    linksWarehousesManufacturers, retailersPositions, warehousesPositions, ...
-    manufacturersPositions, warehousesDemands)
-
-
 
 
 
 %% Set custom locations if desired...
-customRetailerLocations = ginput(problemParameters.nbrOfCustomers);
+customRetailerLocations = ginput(problemParameters.nbrOfRetailers);
 customWarehouseLocations = ginput(problemParameters.nbrOfWarehouses);
 customSupplierLocations = ginput(problemParameters.nbrOfSuppliers);
 
@@ -66,48 +50,7 @@ VisualizeNetwork(layer)
 
 
 
-%%
-clear; close all force; clc;
 
-
-%% Set paths:
-
-pathHome = pwd;
-cd ..
-cd GA
-cd ThreeLayers
-pathGA = pwd;
-cd(pathHome)
-addpath(pathGA)
-
-
-%%
-
-
-%%
-nRetailers = 50; %number of customers
-nWarehouses = 10; % number of stores
-nManufacturers = 5;
-worldSize = 1; %size of the world
-maxDistance = 3; %interaction radius (UNUSED)
-
-retailersDemands = ones(1,nRetailers);
-warehousesMaxCapacity = Inf;%(nRetailers/nWarehouses)*ones(nWarehouses,1);
-manufacturersSupply = 10*ones(nManufacturers,1);
-
-[facilitiesPerLayer, positions, distances] = GenerateWorld(...
-    worldSize, nRetailers, nWarehouses, nManufacturers);
-
-retailersPositions = positions{1};
-warehousesPositions = positions{2};
-manufacturersPositions = positions{3};
-
-[linksRetailersWarehouses, linksWarehousesManufacturers] = ...
-    InitialiseWorldPlot(worldSize, retailersPositions, warehousesPositions, manufacturersPositions);
-
-
-
-% VisualizeSolution(layer)
 
 %% Main algorithm
 clc
@@ -568,9 +511,31 @@ cd(oldpath)
 
 
 %%
+clc
+clear
 
+alpha = 0.5
 
+nRetailers = 20;
+nWarehouses = 10;
+nManufacturers = 5;
 
+retailerDemands = ones(1,nRetailers);
+manufacturerSupply = ones(1,nManufacturers)*4;
+
+rLocations = rand(nRetailers,2)';
+wLocations = rand(nWarehouses,2)';
+mLocations = rand(nManufacturers,2)';
+
+positions = cell(3,1);
+positions{1} = rLocations;
+positions{2} = wLocations;
+positions{3} = mLocations;
+
+tic
+PriceABSolver(alpha,nRetailers,nWarehouses,nManufacturers,retailerDemands,...
+    manufacturerSupply,positions)
+toc
 
 
 

@@ -14,11 +14,11 @@ nbrOfSuppliers = 5;
 
 assert(mod(nbrOfCustomers,nbrOfSuppliers) == 0);
 
-problemParameters.nbrOfCustomers = nbrOfCustomers;
+problemParameters.nbrOfRetailers = nbrOfCustomers;
 problemParameters.nbrOfWarehouses = nbrOfWarehouses;
-problemParameters.nbrOfSuppliers = nbrOfSuppliers;
+problemParameters.nbrOfManufacturers = nbrOfSuppliers;
 
-problemParameters.customerDemands = ones(1,problemParameters.nbrOfCustomers);
+problemParameters.retailerDemands = ones(1,problemParameters.nbrOfCustomers);
 problemParameters.customerValues = ones(1,problemParameters.nbrOfCustomers);
 problemParameters.suppliersSupply = ones(1,nbrOfSuppliers)*nbrOfCustomers/nbrOfSuppliers;
 
@@ -26,27 +26,6 @@ problemParameters.suppliersSupply = ones(1,nbrOfSuppliers)*nbrOfCustomers/nbrOfS
 %% Initialize network
 [layer,parameterSettings] = InitializeNetwork(problemParameters);
 parameterSettings.transportationCost = 0.5
-
-%%
-
-worldSize = 1;
-
-[ bestSolution,linksRetailersWarehouses,...
-    linksWarehousesManufacturers, retailersPositions, ...
-    warehousesPositions, ...
-    manufacturersPositions, warehousesDemands] = ConvertData( layer )
-
-% [linksRetailersWarehouses, linksWarehousesManufacturers] = ...
-%     InitialiseWorldPlot(worldSize, retailersPositions, warehousesPositions, manufacturersPositions);
-
-[linksRetailersWarehouses,linksWarehousesManufacturers] = ...
-    InitialiseWorldPlot(worldSize, retailersPositions, warehousesPositions, manufacturersPositions);
-
-
-DrawMultiNetwork(bestSolution, linksRetailersWarehouses, ...
-    linksWarehousesManufacturers, retailersPositions, warehousesPositions, ...
-    manufacturersPositions, warehousesDemands)
-
 
 
 
@@ -62,64 +41,11 @@ layer(3).locations = customSupplierLocations;
 
 %%
 VisualizeNetwork(layer)
-%%
-
-clf
-
-X = layer(1).locations(:,1)
-Y = layer(1).locations(:,2)
-
-
-scatter(X,Y,'r^','filled')
 
 
 
 
 
-
-
-%%
-clear; close all force; clc;
-
-
-%% Set paths:
-
-pathHome = pwd;
-cd ..
-cd GA
-cd ThreeLayers
-pathGA = pwd;
-cd(pathHome)
-addpath(pathGA)
-
-
-%%
-
-
-%%
-nRetailers = 50; %number of customers
-nWarehouses = 10; % number of stores
-nManufacturers = 5;
-worldSize = 1; %size of the world
-maxDistance = 3; %interaction radius (UNUSED)
-
-retailersDemands = ones(1,nRetailers);
-warehousesMaxCapacity = Inf;%(nRetailers/nWarehouses)*ones(nWarehouses,1);
-manufacturersSupply = 10*ones(nManufacturers,1);
-
-[facilitiesPerLayer, positions, distances] = GenerateWorld(...
-    worldSize, nRetailers, nWarehouses, nManufacturers);
-
-retailersPositions = positions{1};
-warehousesPositions = positions{2};
-manufacturersPositions = positions{3};
-
-[linksRetailersWarehouses, linksWarehousesManufacturers] = ...
-    InitialiseWorldPlot(worldSize, retailersPositions, warehousesPositions, manufacturersPositions);
-
-
-
-% VisualizeSolution(layer)
 
 %% Main algorithm
 clc
@@ -140,16 +66,16 @@ startK = 0.01;
 endK = 0.0001;
 
 
-nbrOfIterations = 10000;
+% nbrOfIterations = 10000;
 
-fitness = zeros(1,nbrOfIterations);
-
-supplyData = zeros(1,nbrOfIterations);
-demandData = zeros(1,nbrOfIterations);
+% fitness = zeros(1,nbrOfIterations);
+% 
+% supplyData = zeros(1,nbrOfIterations);
+% demandData = zeros(1,nbrOfIterations);
 
 % Study single node:
-iLayer = 2;
-iNode = 3;
+% iLayer = 2;
+% iNode = 3;
 
 % 
 % for i = 1:nbrOfIterations
@@ -177,7 +103,7 @@ iNode = 3;
 
 nbrOfMeassurements = 100;
 
-nbrOfIterationsPerMeassurement = 300;
+nbrOfIterationsPerMeassurement = 100;
 
 nbrOfIterations = nbrOfMeassurements * nbrOfIterationsPerMeassurement;
 
@@ -188,10 +114,14 @@ for iMeassurement = 1:nbrOfMeassurements
     for iIteration = 1:nbrOfIterationsPerMeassurement
         i = i + 1;
         x = i/nbrOfIterations;
-        parameterSettings.greed = (1-x)*startGreed + x*endGreed;
+%         parameterSettings.greed = (1-x)*startGreed + x*endGreed;
         parameterSettings.allowedPriceChange = ...
-            (1-x)*startAllowedPriceChange + x*endAllowedPriceChange;
-        parameterSettings.k = (1-x)*startK + x*endK;
+            sigmoid(x,startAllowedPriceChange,endAllowedPriceChange);
+        parameterSettings.k = sigmoid(x,startK,endK);
+
+% parameterSettings.allowedPriceChange = ...
+%             (1-x)*startAllowedPriceChange + x*endAllowedPriceChange;
+%         parameterSettings.k = (1-x)*startK + x*endK;
         
         if (mod(i,100) == 0)
             i
@@ -248,9 +178,14 @@ clf
 
 %%
 
-x = 0:0.1:1
+steepness = 6;
+minVal = -1;
+maxVal = 4;
 
-y = sigmoid(x)
+
+x = 0:0.01:1
+
+y = sigmoid(x,minVal,maxVal,steepness)
 
 plot(x,y)
 
@@ -265,7 +200,7 @@ plot(supplyData,'b')
 
 plot(demandData,'r')
 %%
-VisualizeNetwork(layer)
+VisualizeNetwork(layer,fitness)
 
 %%
 clf

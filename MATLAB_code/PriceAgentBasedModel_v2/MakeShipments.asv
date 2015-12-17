@@ -50,17 +50,15 @@ end
 
 loopDone = false;
 ctr = 0;
-'STARTING LOOP'
+% 'STARTING LOOP'
 while ~loopDone
     ctr = ctr + 1;
-    ctr
+%     ctr
     
     % Check if there are any feasable transactions between retailers and
     % Warehouses:
-    sum(feasabilityTransactionRetailerWarehouse(:))
     if sum(feasabilityTransactionRetailerWarehouse(:)) == 0
-        'NOT OK!'
-        sum(feasabilityTransactionRetailerWarehouse(:))
+%         'NOT OK!'
         break
     end
         
@@ -71,14 +69,14 @@ while ~loopDone
     
     % Check if iRetailer is OK:
     if ~retailerDemands(iRetailer) > 0
-        'retailer NOT OK!'
+%         'retailer NOT OK!'
         feasabilityTransactionRetailerWarehouse(iRetailer,:) = zeros;
         continue
     end
     
     % Check if jWarehouse is OK:
     if sum(feasabilityTransactionWarehouseManufacturer(jWarehouse,:)) > 0
-        'warehouse NOT OK!'
+%         'warehouse NOT OK!'
         [~,kManufacturer] = max(feasabilityTransactionWarehouseManufacturer(jWarehouse,:));
     else
         feasabilityTransactionRetailerWarehouse(:,jWarehouse) = zeros;
@@ -87,10 +85,14 @@ while ~loopDone
     
     % Check if kManufacturer is OK:
     if ~manufacturerSupply(kManufacturer) > 0
-        'Manufacturer NOT OK!'
+%         'Manufacturer NOT OK!'
         feasabilityTransactionWarehouseManufacturer(:,kManufacturer) = zeros;
         continue
     end
+    
+    %
+    
+    
     
     retailerDemands(iRetailer) = retailerDemands(iRetailer) - 1;
     manufacturerSupply(kManufacturer) = manufacturerSupply(kManufacturer) - 1;

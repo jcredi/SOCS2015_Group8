@@ -13,10 +13,7 @@ if (nargin == 0)
     retailerValues = ones(nbrOfRetailers,1);
     manufacturerSupply = ones(nbrOfManufacturers,1) * 10;
     
-    layer(1).locations = rand(nbrOfRetailers,2);
-    layer(2).locations = rand(nbrOfWarehouses,2);
-    layer(3).locations = rand(nbrOfManufacturers,2);
-    
+
 else
     
     nbrOfRetailers = problemParameters.nbrOfRetailers;
@@ -29,9 +26,8 @@ else
     retailerValues = problemParameters.retailerValues;
     manufacturerSupply = problemParameters.manufacturerSupply;
     
-    layer(1).locations = problemParameters.retailerLocations;
-    layer(2).locations = problemParameters.warehouseLocations;
-    layer(3).locations = problemParameters.manufacturerLocations;
+    layer(end).locations = 
+
     
 end
 
@@ -53,7 +49,7 @@ layer(1).supply = zeros(1,nbrOfNodes);
 layer(1).demand = retailerDemand;
 layer(1).prices = retailerValues;
 
-% layer(1).locations = rand(nbrOfRetailers,2);
+layer(1).locations = rand(nbrOfRetailers,2);
 
 layer(1).influx = zeros(layerSizes(1),layerSizes(2));
 
@@ -71,7 +67,7 @@ for i = 2 : length(layerSizes) - 1
     
     layer(i).prices = zeros(1,nbrOfNodes) * 0.5;
     
-%     layer(i).locations = rand(nbrOfNodes,2);
+    layer(i).locations = rand(nbrOfNodes,2);
     layer(i).influx = zeros(layerSizes(i),layerSizes(i+1));
 end
 
@@ -86,6 +82,7 @@ layer(end).demand = zeros(1,nbrOfNodes);
 % Initialzie the manufacturer prices to 0;
 layer(end).prices = zeros(1,nbrOfNodes);
 
+
 % layer(end).locations = rand(nbrOfNodes,2);
 
 % Distances:
@@ -93,8 +90,6 @@ layer(end).prices = zeros(1,nbrOfNodes);
 for iLayer = 1:length(layer) -1
     customerLocations = layer(iLayer).locations;
     storeLocations = layer(iLayer + 1).locations;
-    size(customerLocations)
-    size(storeLocations)
     layer(iLayer).distances = pdist2(customerLocations,storeLocations);
 end
 

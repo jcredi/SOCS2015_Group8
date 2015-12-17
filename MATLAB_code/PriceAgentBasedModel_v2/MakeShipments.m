@@ -57,10 +57,8 @@ while ~loopDone
     
     % Check if there are any feasable transactions between retailers and
     % Warehouses:
-%     sum(feasabilityTransactionRetailerWarehouse(:))
     if sum(feasabilityTransactionRetailerWarehouse(:)) == 0
 %         'NOT OK!'
-%         sum(feasabilityTransactionRetailerWarehouse(:))
         break
     end
         
@@ -91,6 +89,13 @@ while ~loopDone
         feasabilityTransactionWarehouseManufacturer(:,kManufacturer) = zeros;
         continue
     end
+    
+    % Make sure jWarehouse can only choose kManufacturer:
+    tempFeasability = feasabilityTransactionWarehouseManufacturer(jWarehouse,kManufacturer);
+    feasabilityTransactionWarehouseManufacturer(jWarehouse,:) = zeros;
+    feasabilityTransactionWarehouseManufacturer(jWarehouse,kManufacturer) = tempFeasability;
+    
+    
     
     retailerDemands(iRetailer) = retailerDemands(iRetailer) - 1;
     manufacturerSupply(kManufacturer) = manufacturerSupply(kManufacturer) - 1;
