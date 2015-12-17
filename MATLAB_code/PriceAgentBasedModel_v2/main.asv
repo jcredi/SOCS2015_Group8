@@ -5,6 +5,9 @@
 clear
 clc
 
+% seed
+rng(0)
+
 nbrOfCustomers = 50;
 nbrOfWarehouses = 10;
 nbrOfSuppliers = 5;
@@ -22,6 +25,31 @@ problemParameters.suppliersSupply = ones(1,nbrOfSuppliers)*nbrOfCustomers/nbrOfS
 
 %% Initialize network
 [layer,parameterSettings] = InitializeNetwork(problemParameters);
+parameterSettings.transportationCost = 0.5
+
+%%
+
+worldSize = 1;
+
+[ bestSolution,linksRetailersWarehouses,...
+    linksWarehousesManufacturers, retailersPositions, ...
+    warehousesPositions, ...
+    manufacturersPositions, warehousesDemands] = ConvertData( layer )
+
+% [linksRetailersWarehouses, linksWarehousesManufacturers] = ...
+%     InitialiseWorldPlot(worldSize, retailersPositions, warehousesPositions, manufacturersPositions);
+
+[linksRetailersWarehouses,linksWarehousesManufacturers] = ...
+    InitialiseWorldPlot(worldSize, retailersPositions, warehousesPositions, manufacturersPositions);
+
+
+DrawMultiNetwork(bestSolution, linksRetailersWarehouses, ...
+    linksWarehousesManufacturers, retailersPositions, warehousesPositions, ...
+    manufacturersPositions, warehousesDemands)
+
+
+
+
 
 %% Set custom locations if desired...
 customRetailerLocations = ginput(problemParameters.nbrOfCustomers);
@@ -34,50 +62,208 @@ layer(3).locations = customSupplierLocations;
 
 %%
 VisualizeNetwork(layer)
+%%
+
+clf
+
+X = layer(1).locations(:,1)
+Y = layer(1).locations(:,2)
+
+
+scatter(X,Y,'r^','filled')
+
+
+
+
+
+
+
+%%
+clear; close all force; clc;
+
+
+%% Set paths:
+
+pathHome = pwd;
+cd ..
+cd GA
+cd ThreeLayers
+pathGA = pwd;
+cd(pathHome)
+addpath(pathGA)
+
+
+%%
+
+
+%%
+nRetailers = 50; %number of customers
+nWarehouses = 10; % number of stores
+nManufacturers = 5;
+worldSize = 1; %size of the world
+maxDistance = 3; %interaction radius (UNUSED)
+
+retailersDemands = ones(1,nRetailers);
+warehousesMaxCapacity = Inf;%(nRetailers/nWarehouses)*ones(nWarehouses,1);
+manufacturersSupply = 10*ones(nManufacturers,1);
+
+[facilitiesPerLayer, positions, distances] = GenerateWorld(...
+    worldSize, nRetailers, nWarehouses, nManufacturers);
+
+retailersPositions = positions{1};
+warehousesPositions = positions{2};
+manufacturersPositions = positions{3};
+
+[linksRetailersWarehouses, linksWarehousesManufacturers] = ...
+    InitialiseWorldPlot(worldSize, retailersPositions, warehousesPositions, manufacturersPositions);
+
+
+
+% VisualizeSolution(layer)
 
 %% Main algorithm
+clc
 
 profile on
 
-startGreed = 0.1;
-endGreed = 0.5;
+startGreed = 1;
+endGreed = 1;
 
-parameterSettings.allowedPriceChange = 0.05;
-parameterSettings.k = 0.05;
+parameterSettings.allowedPriceChange = 0.1;
+parameterSettings.k = 0.5;
+parameterSettings.decay = 1;
 
-startAllowedPriceChange = 0.5;
-endAllowedPriceChange = 0.01;
+startAllowedPriceChange = 0.01;
+endAllowedPriceChange = 0.0001;
 
-startK = 1;
-endK = 0.01;
+startK = 0.01;
+endK = 0.0001;
 
 
-nbrOfIterations = 1000;
+nbrOfIterations = 10000;
 
 fitness = zeros(1,nbrOfIterations);
 
-for i = 1:nbrOfIterations
-    
-    x = i/nbrOfIterations;
-    parameterSettings.greed = (1-x)*startGreed + x*endGreed;
-    parameterSettings.allowedPriceChange = ...
-        (1-x)*startAllowedPriceChange + x*endAllowedPriceChange;
-    parameterSettings.k = (1-x)*startK + x*endK;
-    
-    if (mod(i,100) == 0)
-        VisualizeNetwork(layer)
-        pause(0.001)
-        i
+supplyData = zeros(1,nbrOfIterations);
+demandData = zeros(1,nbrOfIterations);
+
+% Study single node:
+iLayer = 2;
+iNode = 3;
+
+% 
+% for i = 1:nbrOfIterations
+%     
+%     x = i/nbrOfIterations;
+%     parameterSettings.greed = (1-x)*startGreed + x*endGreed;
+%     parameterSettings.allowedPriceChange = ...
+%         (1-x)*startAllowedPriceChange + x*endAllowedPriceChange;
+%     parameterSettings.k = (1-x)*startK + x*endK;
+%     
+%     if (mod(i,100) == 0)
+%         VisualizeNetwork(layer)
+%         pause(0.001)
+%         i
+%     end
+%     layer = Trade(layer,parameterSettings);
+%     layer = UpdatePrices(layer,parameterSettings);
+%     layer = MakeShipments(layer,parameterSettings);
+%     
+%     fitness(i) = CalculateFitness(layer,parameterSettings.transportationCost);
+%     supplyData(i) = layer(iLayer).supply(iNode);
+%     demandData(i) = layer(iLayer).demand(iNode);
+%     
+% end
+
+nbrOfMeassurements = 100;
+
+nbrOfIterationsPerMeassurement = 300;
+
+nbrOfIterations = nbrOfMeassurements * nbrOfIterationsPerMeassurement;
+
+i = 1;
+fitness = zeros(1,nbrOfMeassurements);
+
+for iMeassurement = 1:nbrOfMeassurements
+    for iIteration = 1:nbrOfIterationsPerMeassurement
+        i = i + 1;
+        x = i/nbrOfIterations;
+        parameterSettings.greed = (1-x)*startGreed + x*endGreed;
+        parameterSettings.allowedPriceChange = ...
+            (1-x)*startAllowedPriceChange + x*endAllowedPriceChange;
+        parameterSettings.k = (1-x)*startK + x*endK;
+        
+        if (mod(i,100) == 0)
+            i
+        end
+        layer = Trade(layer,parameterSettings);
+        layer = UpdatePrices(layer,parameterSettings);
+        
+        %         supplyData(i) = layer(iLayer).supply(iNode);
+        %         demandData(i) = layer(iLayer).demand(iNode);
     end
-    layer = Trade(layer,parameterSettings);
-    layer = UpdatePrices(layer,parameterSettings);
     
-    fitness(i) = CalculateFitness(layer,parameterSettings.transportationCost);
+    layer = MakeShipments(layer,parameterSettings);
+    fitness(iMeassurement) = CalculateFitness(layer,parameterSettings.transportationCost);
+%     clf
+%     hold on
+%     figure(1)
+    VisualizeNetwork(layer,fitness)
+    pause(0.001)
+%     figure(2)
+%     plot(fitness)
+    
 end
 
-profile viewer
+%%
 
-    
+maxVal = 3;
+minVal = 1;
+
+%%
+clf
+
+
+%%
+steepness = 6;
+maxVal = 10;
+minVal = 5;
+
+offset = minVal
+amplitude = maxVal - minVal;
+f = @(x)(offset + amplitude * 1./(1 + exp((2*x-1)*steepness)));
+
+x = 0:0.1:1
+
+y = f(x)
+clf
+
+x
+plot(x,y)
+
+
+%%
+
+clf
+
+%%
+
+x = 0:0.1:1
+
+y = sigmoid(x)
+
+plot(x,y)
+
+
+%%
+profile viewer
+%%
+clf
+hold on
+plot(supplyData,'b')
+
+
+plot(demandData,'r')
 %%
 VisualizeNetwork(layer)
 
@@ -326,22 +512,65 @@ xlabel('time')
 ylabel('fitness')
 
 %%
-
-
-%% testa local function
-
-rng('shuffle')
-
-
-Test();
+clc
+px = [9,123,2]
+sampleSize = 1;
 
 
 
+cdf = cumsum(px); 
+cdf = cdf - min(cdf); 
+cdf = cdf/max(cdf)
+
+rnd = rand(sampleSize, 1); 
+% X = interp1(cdf, x, rnd, 'linear', 0);
 
 
 
 
+%%
+clc
+v = [0,1,2,3,4];
+tic 
+for i = 1:100000
+    x = randp(v,100,1);
+end
+toc
 
+tic
+for i = 1:100000
+    x = ChooseRandomIndexFromVector(v);
+end
+toc
+
+
+%%
+
+
+A = [2,3,5;9,8,6]
+
+B = A(:)
+B(4)
+
+[i,j] = ind2sub(size(A),6);
+disp([i,j])
+
+
+%%
+
+Test()
+
+%% Use GenerateWorld ...
+
+oldpath = pwd;
+pathGA = '..\GA\ThreeLayers';
+cd(pathGA)
+
+%%
+cd(oldpath)
+
+
+%%
 
 
 
