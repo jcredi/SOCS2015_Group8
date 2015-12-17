@@ -15,7 +15,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="AB_diagramm_4_martin.svg">
+   sodipodi:docname="AB_diagramm_5_martin.png">
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -27,7 +27,7 @@
      inkscape:cx="565.30203"
      inkscape:cy="405.11662"
      inkscape:document-units="px"
-     inkscape:current-layer="g14132"
+     inkscape:current-layer="g6464"
      showgrid="false"
      fit-margin-left="0"
      inkscape:snap-page="true"
@@ -395,19 +395,19 @@
                style="font-size:34px" /></flowRegion><flowPara
              id="flowPara6422-0"
              style="font-size:34px;font-weight:bold;-inkscape-font-specification:Sans Bold">Warehouse</flowPara></flowRoot>        <flowRoot
-           transform="translate(732.96857,287.40197)"
+           transform="translate(740.96857,263.40197)"
            xml:space="preserve"
            id="flowRoot6416-0"
            style="font-size:36px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><flowRegion
              id="flowRegion6418-4"><rect
                id="rect6420-1"
-               width="184.13443"
-               height="60.745377"
+               width="281.15457"
+               height="83.524895"
                x="70.236847"
                y="345.44849"
                style="font-size:36px" /></flowRegion><flowPara
              id="flowPara6422-4"
-             style="font-size:34px;font-weight:bold;-inkscape-font-specification:Sans Bold">Supplier</flowPara></flowRoot>      </g>
+             style="font-size:34px;font-weight:bold;-inkscape-font-specification:Sans Bold">Manu - facture</flowPara></flowRoot>      </g>
       <path
          sodipodi:nodetypes="cc"
          inkscape:connector-curvature="0"

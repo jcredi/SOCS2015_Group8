@@ -1,0 +1,1 @@
+f(E) = \sum _{i= 1}^{N_1} \theta_i^{[1]}\ x_i^{[1]} - \alpha \sum_{k = 1}^{K-1} \sum_{j = 1}^{N_k}\sum_{i=1}^{N_{k+1}} \theta_{i,j}^{[k]}\ x_{i,j}^{[k]}\ w_{i,j}^{[k]}
