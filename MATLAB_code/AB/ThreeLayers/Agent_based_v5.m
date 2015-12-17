@@ -5,7 +5,7 @@
 runs = 5e4;
 fidelityReinforcement = 0.01;
 fidelityDecay = 0.01; % percent
-beta = 1.75; % controls weight of fidelity over visibility:
+beta = 1; % controls weight of fidelity over visibility:
           % beta = 0 -> only visibility
           % beta = 1 -> same importance
           % beta = 2 -> only fidelity
@@ -35,15 +35,15 @@ for k = 0:runs
     ordersWM = PlaceOrders(demandsWM,fidelityWM, visibility{2}, beta);
     
     % Shipments phase (suppliers to customers)
-    distanceOffsetInput = zeros;
-    shipmentsMW = ShipItems_withFidelity(ordersWM, manufacturersSupply, distances{2}, alpha, fidelityWM, beta, , distanceOffsetInput);
-    shipmentsWR = ShipItems_withFidelity(ordersRW, shipmentsMW, distances{1}, alpha, fidelityRW, beta, , distanceOffsetInput);
+    distanceOffsetInput = zeros(nManufacturers);
+    [shipmentsMW, distanceOffsetMW] = ShipItems_withFidelity(ordersWM, manufacturersSupply, distances{2}, alpha, fidelityWM, beta, distanceOffsetInput);
+    [shipmentsWR, distanceOffsetWR] = ShipItems_withFidelity(ordersRW, shipmentsMW, distances{1}, alpha, fidelityRW, beta, distanceOffsetMW);
     
     % Fidelity update
-    fidelityWM = UpdateFidelity(fidelityWM, shipmentsMW, ordersWM, fidelityReinforcement, fidelityDecay);
-    fidelityRW = UpdateFidelity(fidelityRW, shipmentsWR, ordersRW, fidelityReinforcement, fidelityDecay);
+    fidelityWM = UpdateFidelity_fitness_including(fidelityWM, shipmentsMW, ordersWM, fidelityReinforcement, fidelityDecay);
+    fidelityRW = UpdateFidelity_fitness_including(fidelityRW, shipmentsWR, ordersRW, fidelityReinforcement, fidelityDecay);
     
-    if mod(k,1000) == 0
+    if mod(k,2000) == 0
         
         tradeVolumeMatrixWM = ordersWM.*repmat(shipmentsMW,nManufacturers,1);
         [indexWarehousesRows,indexWarehousesCols] = find(tradeVolumeMatrixWM);
