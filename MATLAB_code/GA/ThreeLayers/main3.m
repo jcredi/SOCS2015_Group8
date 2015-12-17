@@ -16,3 +16,8 @@ manufacturersSupply = 10*ones(nManufacturers,1);
 
 [facilitiesPerLayer, positions, distances] = GenerateWorld(...
     worldSize, nRetailers, nWarehouses, nManufacturers);
+
+alpha = 0.5;
+
+[bestSoFar, bestFitness] = GA3(alpha, worldSize, facilitiesPerLayer, ...
+    positions, distances, retailersDemands, manufacturersSupply );

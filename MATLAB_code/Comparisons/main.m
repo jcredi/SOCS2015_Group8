@@ -7,9 +7,9 @@ clear; close all force; clc;
 
 % Common
 alpha = 0.5;
-nMaps = 1; 
+nMaps = 20; 
 
-nRetailers = 50; 
+nRetailers = 45; 
 nWarehouses = 5; 
 nManufacturers = 3; 
 worldSize = 1; %size of the world
@@ -26,7 +26,7 @@ nRunsForAverage = 500;
 
 % Agent-based price
 nPriceUpdates = 2000;
-nRunsForAveragePriceModel = 5;
+nRunsForAveragePriceModel = 1;
 
 
 % ============================================== %
@@ -44,7 +44,7 @@ fitness_AB_greedy = zeros(1,nMaps);
 fitness_AB_fidelity = zeros(1,nMaps);
 fitness_AB_price = zeros(1,nMaps);
 
-for iMap = 1:nMaps
+parfor iMap = 1:nMaps
     
     % Generate a new map
     [facilitiesPerLayer, positions, distances] = GenerateWorld(...
@@ -86,3 +86,21 @@ for iMap = 1:nMaps
     fprintf('fitness: %f\n\n',fitness_AB_fidelity(iMap))
     
 end
+
+profit_GA = mean(fitness_GA);
+profit_AB_greedy = mean(fitness_AB_greedy);
+profit_AB_fidelity = mean(fitness_AB_fidelity);
+profit_AB_price = mean(fitness_AB_price);
+
+std_profit_GA = std(fitness_GA);
+std_profit_AB_greedy = std(fitness_AB_greedy);
+std_profit_AB_fidelity = std(fitness_AB_fidelity);
+std_profit_AB_price = std(fitness_AB_price);
+
+
+bar(1:4,[profit_GA, profit_AB_greedy, profit_AB_fidelity, profit_AB_price]);
+hold on
+errorbar([1,2,3,4], [profit_GA, profit_AB_greedy, profit_AB_fidelity, profit_AB_price], ...
+    [std_profit_GA, std_profit_AB_greedy, std_profit_AB_fidelity, std_profit_AB_price]);
+
+
