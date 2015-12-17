@@ -7,7 +7,7 @@ clear; close all force; clc;
 
 % Common
 alpha = 0.5;
-nMaps = 5; 
+nMaps = 1; 
 
 nRetailers = 50; 
 nWarehouses = 5; 
@@ -26,7 +26,7 @@ nRunsForAverage = 500;
 
 % Agent-based price
 nPriceUpdates = 2000;
-nRunsForAveragePriceModel = 3;
+nRunsForAveragePriceModel = 5;
 
 
 % ============================================== %
@@ -52,28 +52,37 @@ for iMap = 1:nMaps
     visibility = {1./distances{1}; 1./distances{2}};
     fprintf('Solving map %i of %i', iMap, nMaps);
     
-    'Start AB price model'
+    
     % Solve with AB price model
+    'Start AB price model'
     fitness_AB_price(iMap) = PriceABSolver(alpha,nRetailers,nWarehouses,nManufacturers,retailersDemands,...
     manufacturersSupply,positions,nPriceUpdates,nRunsForAveragePriceModel);
     'End AB price model'
-    fprintf('fitness: %f',fitness_AB_price(iMap))
+    fprintf('fitness: %f\n\n',fitness_AB_price(iMap))
     
     
     % Solve with GA
+    'Start GA'
     [~, fitness_GA(iMap)] = GA3_solver(alpha, facilitiesPerLayer, ...
         distances, retailersDemands, manufacturersSupply );
-    fprintf('Solving map %i of %i', iMap, nMaps);
+    'End GA'
+    fprintf('fitness: %f\n\n',fitness_GA(iMap))
     
     % Solve with AB greedy
+    'Start AB greedy model'
     [fitness_AB_greedy(iMap), ~] = AgentBasedSolver_greedy(fidelityReinforcement, fidelityDecayRate, ...
         beta, alpha, nRunsAB, nRetailers, nWarehouses, nManufacturers, retailersDemands, ...
         manufacturersSupply, distances, visibility, nRunsForAverage);
+    'End AB greedy model'
+    fprintf('fitness: %f\n\n',fitness_AB_greedy(iMap))
+    
     
     % Solve with AB fidelity
+    'Start AB fidelity model'
     [fitness_AB_fidelity(iMap), ~] = AgentBasedSolver_fidelity(fidelityReinforcement, fidelityDecayRate, ...
         beta, alpha, nRunsAB, nRetailers, nWarehouses, nManufacturers, retailersDemands, ...
         manufacturersSupply, distances, visibility, nRunsForAverage);
-    
+    'End AB fidelity model'
+    fprintf('fitness: %f\n\n',fitness_AB_fidelity(iMap))
     
 end
