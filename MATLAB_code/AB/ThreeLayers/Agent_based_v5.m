@@ -43,7 +43,7 @@ for k = 0:runs
     fidelityWM = UpdateFidelity_fitness_including(fidelityWM, shipmentsMW, ordersWM, fidelityReinforcement, fidelityDecay);
     fidelityRW = UpdateFidelity_fitness_including(fidelityRW, shipmentsWR, ordersRW, fidelityReinforcement, fidelityDecay);
     
-    if mod(k,2000) == 0
+    if mod(k,500) == 0
         
         tradeVolumeMatrixWM = ordersWM.*repmat(shipmentsMW,nManufacturers,1);
         [indexWarehousesRows,indexWarehousesCols] = find(tradeVolumeMatrixWM);
