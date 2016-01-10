@@ -31,7 +31,7 @@ nGenerations = 25000;
 crossoverProbability = 0.75; % this is now for each chromosome!
 mutationProbability = 1/nTotGenes; % see below
 tournamentProbability = 0.8;
-tournamentSize = 2;
+tournamentSize = 3;
 plotFrequency = 1000;
 
 %% Initialisations
