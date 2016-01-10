@@ -27,7 +27,7 @@ manufacturersPositions = positions{3};
 
 %% GA parameters
 populationSize = 50;
-nGenerations = 100000;
+nGenerations = 25000;
 crossoverProbability = 0.75; % this is now for each chromosome!
 mutationProbability = 1/nTotGenes; % see below
 tournamentProbability = 0.8;

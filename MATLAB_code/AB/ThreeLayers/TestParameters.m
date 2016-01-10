@@ -1,9 +1,9 @@
 % TestParameters 
 
 
-nMaps = 5;
+nMaps = 3;
 betaValues = 0:0.25:2;
-alpha = 0.3;
+alpha = 0.5;
 nRuns = 20000;
 nRunsForAverage = 500;
 fidelityReinforcement = 0.01;%logspace(-3,-1,7);
@@ -29,9 +29,9 @@ for iMap = 1:nMaps
         beta = betaValues(iBeta);
         fprintf('  beta = %f\n', beta); tic
         [fitnessMean(iMap, iBeta), fitnessStd(iMap, iBeta)] = ...
-            AgentBasedSolver(fidelityReinforcement, fidelityDecayRate, ...
+            AgentBasedSolver_fidelity(fidelityReinforcement, fidelityDecayRate, ...
             beta, alpha, nRuns, nRetailers, nWarehouses, nManufacturers, retailersDemands, ...
-            manufacturersSupply, distances, visibility, nRunsForAverage, worldSize, positions);
+            manufacturersSupply, distances, visibility, nRunsForAverage);
         toc
     end
     

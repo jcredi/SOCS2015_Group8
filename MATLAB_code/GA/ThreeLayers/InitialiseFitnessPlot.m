@@ -10,7 +10,7 @@ hold on;
 maxFitnessFigure = plot(0, initialFitness,'LineWidth',1.5);
 %xlim([1 nGenerations]);
 xlabel('Generation');
-ylabel('Fitness of best viable solution');
+ylabel('Supply chain profit (best solution)');
 set(gca, 'FontSize', 16);
 axis square;
 
