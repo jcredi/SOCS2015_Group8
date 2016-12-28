@@ -1,6 +1,8 @@
 # SOCS2015_Group8
 Repo for FFR120 - Simulation of Complex Systems - Group project
+
 Chalmers University of Technology, 2015
+
 
 Group members: Jacopo Credi, Martin Henoch, Jonas Meinel, Viktor W&aanerl&oov
 
